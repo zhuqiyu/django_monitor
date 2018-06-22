@@ -1,0 +1,80 @@
+{% extends "master/layout.html" %}
+{% load oldboy %}
+{% block content %}
+<h2 style='position:relative;left:3%'>资产表</h2>
+	<table style='position:relative;left:8%;top:10px;bottom:50px' border='1'>
+			<th>
+				<td>1000倍</td>
+				<td>hostname</td>
+				<td>ip</td>
+				<td>创建时间</td>
+				<td>更新时间</td>
+				<td>所属组</td>
+			</th>
+		{% for item in data %}
+			<tr>
+				<td>{{item.id}}</td>
+				<td>{% mymethod item.id %}</td>
+				<td class='td-1'>{{item.hostname}}</td>
+				<td class='td-1'>{{item.ip}}</td>
+				<td>{{item.create_date|date:"Y-m-d H:i:s"}}</td>
+				<td>{{item.update_date|date:"Y-m-d H:i:s"}}</td>
+				<td>{{item.user_group.Name}}</td>
+				<td><input id={{item.id}} type='button' value='保存' onclick="javascript:submitdata(this)"/></td>
+			</tr>			
+		{% endfor %}
+	</table>
+	<form style='position:relative;left:60%;bottom:800px;background-color:rgba(0,0,0,0.1);width:430px;height:450px;border: 1px solid #3481cf;' action='/ad/assetlist/' method='POST'>
+	<h4 style='position:relative;left:28%;top:100px'>欢迎使用主机管理系统</h4>
+		<!--   {{form.as_table}} -->
+		<table style='position:relative;left:10%;top:100px' >
+			{{form}}
+		</table>
+		<input style='position:relative;top:120px;left:25%;height:30px;width:200px' type='submit'   value='提交'/></br><span type='submit' style='position:relative;left:75%;top:-5px'>{{status}}</span>
+		</br>
+		</br>
+	</form>
+<img style="position:fixed;right:150px;bottom:184px;height:34px;width:34px" src="/static/img/sanjiaoxing2.png" />
+<button id="backtop" style="position:fixed;right:150px;bottom:150px;height:34px;width:34px">Top</button>
+<script type="text/javascript" src="/static/js/jquery-3.2.1.min.js"></script>
+<script type="text/javascript">
+var jishi=document.getElementsByClassName("td-1");
+			//遍历数组，给每个td添加点击事件
+			for(var j=0;j<jishi.length;j++){
+				jishi[j].onclick=function(){
+				//首先要创造个输入框
+				var shuru=document.createElement("input");
+				//给输入框添加类型，因为输入框有很多的类型
+				shuru.type="text";
+				//输入框的内容是本身就有的，获取它的内容，用指针来代替
+				shuru.value=this.innerText;
+				var shuru1=shuru.value
+				//把td的内容清空，然后把新建的节点加给它
+				this.innerHTML="";
+				this.appendChild(shuru);
+				shuru.onblur=function(){
+					shuru.parentNode.innerHTML=shuru.value;
+				}
+				shuru.focus();
+				}
+			}
+backtop.onclick = function(){
+	document.body.scrollTop = document.documentElement.scrollTop = 0;
+}
+function submitdata(obj){
+	alert(obj.id)
+	$.ajax({
+		url:"/ad/assetupdate/",
+		data:{id:obj.id,hostname:'alex',ip:'123'},
+		type:'POST',
+		success:function(){
+			console.log('success');
+		},
+		error:function(){
+			console.log('failed');
+		},
+	});
+}
+</script>
+
+{% endblock %}

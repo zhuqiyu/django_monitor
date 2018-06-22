@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+    <title>华熙现场-监控系统</title>
+	<!-- <link rel="icon" href="favicon.ico"/> -->
+    <link rel="icon" href="/static/img/favicon.ico"/>
+    <link type="text/css" rel="stylesheet"
+          href="/static/css/login.css"/>
+	<script src="http://cdn.bootcss.com/blueimp-md5/1.1.0/js/md5.js"></script>   
+	<script src="http://cdn.bootcss.com/blueimp-md5/1.1.0/js/md5.min.js"></script>
+	<script>
+	function checkInput() {
+    var password = document.getElementById('password');
+    <!-- var password_md5 = document.getElementById('password_md5'); -->
+
+    // set password
+    password.value =  md5(password.value);
+    return true;
+	}
+	</script>
+</head>
+<body>
+
+<div >
+<ul>
+	<li><a href='/ad/userlist/'>用户管理</a></li>
+	<li><a href='/ad/assetlist/'>资产管理</a></li>
+	<li><a href='/ad/monitor1/'>主机监控</a><ul>
+		<li><a href='/ad/monitor/hostgroup/'>主机组</a></li>
+		<li><a href='/ad/monitor/templates/'>主机模板</a></li>
+		<li><a href='/ad/monitor/triggers/'>主机触发器</a></li>
+		<li><a href='/ad/monitor/warning/'>告警规则</a></li>
+	</ul></li>
+</ul>
+</div>
+
+<div>
+
+
+<form style='position:fixed;left:18%;top:15%;background-color:rgba(0,0,0,0.1);width:500px;height:650px;border: 1px solid #3481cf;' action='/ad/register/' onsubmit="checkInput()" method='POST'>{% csrf_token %}
+<h4 style='position:relative;left:35%;top:100px'>欢迎注册</h4>
+	<!--   {{form.as_table}} -->
+	<table style='position:relative;left:10%;top:100px' >
+				<tr><th><label for="id_name">名称:</label></th><td><input type="text" name="name" id="id_name" required maxlength="30" /></td></tr>
+<tr><th><label for="id_password">密码:</label></th><td>
+<input type="password" name="password" required id="password" />
+</td></tr>
+<tr><th><label for="id_email">电子邮箱:</label></th><td><input type="email" name="email" id="id_email" required maxlength="254" /></td></tr>
+<tr><th><label for="id_memo">简介:</label></th><td><textarea name="memo" cols="40" id="id_memo" required rows="10">
+</textarea></td></tr>
+<tr><th><label for="id_user_type">用户类型:</label></th><td><select name="user_type" required id="id_user_type">
+  <option value="" selected>---------</option>
+
+  <option value="0">普通管理员</option>
+
+  <option value="1">超级管理员</option>
+
+</select></td></tr>
+	</table>
+	<input style='position:relative;top:120px;left:20%;height:30px;width:200px' type='submit' onclick="document.getElementById('id_password').value=md5(document.getElementById('id_password').value)"  value='提交'/></br><span type='submit' style='position:relative;left:33%;top:125px'>{{status}}</span>
+	</br>
+	</br>
+</form>
+<img style='position:fixed;right:10%;top:150px' src='/static/img/zhuce-1.jpg'/>
+</div>
+
+<div style="position:fixed;bottom:0;left:40%">
+
+	<h5>©华熙现场科技有限公司    <span style="color:black">版权所有</span> <a href="http://www.miitbeian.gov.cn"><span style="color:black">京ICP备16047864号-1</span></a ></h5>
+
+</div>
+
+
+</body>
+</html>

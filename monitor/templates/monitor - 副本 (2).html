@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+    <title>华熙现场-监控系统</title>
+    <link rel="icon" href="/static/img/favicon.ico"/>
+    <link type="text/css" rel="stylesheet"
+          href="/static/css/login.css"/>
+</head>
+<body>
+
+<div >
+<ul>
+	<li><a href='/ad/userlist/'>用户管理</a></li>
+	<li><a href='/ad/assetlist/'>资产管理</a></li>
+	<li><a href='/ad/monitor/hostgroup/'>主机监控</a><ul>
+		<li><a href='/ad/monitor/hostgroup/'>主机组</a></li>
+		<li><a href='/ad/monitor/templates/'>主机模板</a></li>
+		<li><a href='/ad/monitor/triggers/'>主机触发器</a></li>
+		<li><a href='/ad/monitor/warning/'>告警规则</a></li>
+	</ul></li>
+</ul>
+</div>
+{% load oldboy %}
+
+<div id="cpuChart" style="width:100%;height:500px"></div>
+<div id="diskChart" style="width:100%;height:500px"></div>
+<h2 style='position:relative;left:3%'>主机数据</h2>
+	<form action='/ad/monitor/warning/' method='POST'>{% csrf_token %}
+		<table style='position:relative;left:8%;top:10px;bottom:50px' border='1'>
+			
+				
+			
+			
+			{% for item in data %}
+			<tr name="RuleIndextable">
+				<td>{{item}}</td>
+			</tr>
+			{% endfor %}
+			
+			<!-- <tr name="assettable">
+				<td>{{item.id}}</td>
+				<td id="1000name">{% mymethod item.id %}</td>
+				<td ><input name="hostname"/></td>
+				<td ><input name="ip"/></td>
+				<td>{{item.create_date|date:"Y-m-d H:i:s"}}</td>
+				<td>{{item.update_date|date:"Y-m-d H:i:s"}}</td>
+				<td ><select name="groupid">
+					<option value=2>运维组</option>
+					<option value=1>管理组</option>
+				</select></td>
+				<td style='border-style:none'><input type='submit' value='新增'/></td>
+			</tr> -->
+		
+		</table>
+	</form>
+
+
+<img style="position:fixed;right:150px;bottom:134px;height:34px;width:34px" src="/static/img/sanjiaoxing2.png" />
+<button id="backtop" style="position:fixed;right:150px;bottom:100px;height:34px;width:34px">Top</button>
+<script type="text/javascript" src="/static/js/jquery-3.2.1.min.js"></script>
+<script src="/static/js/echarts.min.js"></script>
+<script type="text/javascript">
+var data = {{data|safe}}
+var TIMEDATA = [];
+var CPU = [];
+var MEMCACHE = [];
+var Inode = [];
+for(var i=0;i<data.length;i++){
+	var tiems = data[i]['time'];
+	var newtime = formatDateTime(tiems);
+	TIMEDATA.push(newtime);
+	CPU.push(data[i]['data']['cpupercent']);
+	MEMCACHE.push(data[i]['data']['mempercent']);
+	Inode.push(data[i]['data']['inode']);
+}
+
+function formatDateTime(inputTime) {    
+    var date = new Date(inputTime*1000);  
+    var y = date.getFullYear();    
+    var m = date.getMonth() + 1;    
+    m = m < 10 ? ('0' + m) : m;    
+    var d = date.getDate();    
+    d = d < 10 ? ('0' + d) : d;    
+    var h = date.getHours();  
+    h = h < 10 ? ('0' + h) : h;  
+    var minute = date.getMinutes();  
+    var second = date.getSeconds();  
+    minute = minute < 10 ? ('0' + minute) : minute;    
+    second = second < 10 ? ('0' + second) : second;   
+    return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;    
+};  
+/*图表绘制*/
+
+var MyCharts = echarts.init(document.getElementById('cpuChart'));
+MyCharts.setOption({
+    visualMap: [{
+        show: false,
+        type: 'continuous',
+        seriesIndex: 0,
+        min: 0,
+        max: 400
+    },{
+        show: false,
+        type: 'continuous',
+        seriesIndex: 1,
+        dimension: 0,
+        min: 0,
+        max: TIMEDATA.length - 1
+    }],
+	
+	title: [{
+        text: 'CPU和内存趋势图'
+    },{
+		top: "55%",
+		text: 'Inode(最大值)',
+	}],
+	tooltip : {
+        trigger: 'axis',
+        axisPointer: {
+            type: 'cross'
+        }
+    },
+    legend: {
+        data:['CPU','MEMCACHE','Inode']
+    },
+	xAxis: [{
+        type: 'category',
+        data: TIMEDATA,
+    },{
+		type: 'category',
+		data: TIMEDATA,
+		gridIndex: 1
+	}],
+    yAxis: [{
+        type: 'value'
+    },{
+		type: 'value',
+		gridIndex: 1
+	}],
+    grid: [{
+        bottom: '60%'
+    }, {
+        top: '60%'
+    }],
+    series: [
+	{
+		name: 'CPU',
+        data: CPU,
+        type: 'line'
+    },{
+		name: 'MEMCACHE',
+		data: MEMCACHE,
+		type: 'line',
+	},{
+		name: 'Inode',
+		data: Inode,
+		type: 'line',
+		xAxisIndex: 1,
+        yAxisIndex: 1
+	}
+	]
+});
+
+var MyCharts2 = echarts.init(document.getElementById('diskChart'));
+MyCharts2.setOption({
+    visualMap: [{
+        show: false,
+        type: 'continuous',
+        seriesIndex: 0,
+        min: 0,
+        max: 400
+    },{
+        show: false,
+        type: 'continuous',
+        seriesIndex: 1,
+        dimension: 0,
+        min: 0,
+        max: TIMEDATA.length - 1
+    }],
+	
+	title: [{
+        text: 'CPU和内存趋势图'
+    },{
+		top: "55%",
+		text: 'Inode(最大值)',
+	}],
+	tooltip : {
+        trigger: 'axis',
+        axisPointer: {
+            type: 'cross'
+        }
+    },
+    legend: {
+        data:['CPU','MEMCACHE','Inode']
+    },
+	xAxis: [{
+        type: 'category',
+        data: TIMEDATA,
+    },{
+		type: 'category',
+		data: TIMEDATA,
+		gridIndex: 1
+	}],
+    yAxis: [{
+        type: 'value'
+    },{
+		type: 'value',
+		gridIndex: 1
+	}],
+    grid: [{
+        bottom: '60%'
+    }, {
+        top: '60%'
+    }],
+    series: [
+	{
+		name: 'CPU',
+        data: CPU,
+        type: 'line'
+    },{
+		name: 'MEMCACHE',
+		data: MEMCACHE,
+		type: 'line',
+	},{
+		name: 'Inode',
+		data: Inode,
+		type: 'line',
+		xAxisIndex: 1,
+        yAxisIndex: 1
+	}
+	]
+});
+
+
+
+function myrefresh() {  
+            window.location.reload();  
+        }  
+        setTimeout('myrefresh()', 60000); //指定30秒刷新一次  
+</script>
+
+<div style="position:relative;min-height:50px">
+<div style="margin-bottom:60px"></div>
+<div style="absolute: fixed;  bottom: 0;height: 60px;margin-left:40%">
+
+	<h5>©华熙现场科技有限公司    <span style="color:black">版权所有</span> <a href="http://www.miitbeian.gov.cn"><span style="color:black">京ICP备16047864号-1</span></a ></h5>
+
+</div>
+</div>

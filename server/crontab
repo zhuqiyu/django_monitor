@@ -1,0 +1,5 @@
+MAILTO=""
+# monitor commit data
+*/1 * * * * /usr/bin/python /opt/tools/monitor.py
+# monitor check data
+*/5 * * * * /usr/bin/python /opt/tools/monitor_check.py

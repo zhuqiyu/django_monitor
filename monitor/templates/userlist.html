@@ -1,0 +1,90 @@
+{% extends "master/layout.html" %}
+{% load oldboy %}
+{% block content %}
+
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title></title>
+</head>
+<body>
+<h2 style='position:relative;left:3%'>用户表</h2>
+{% csrf_token %}
+	<table style='position:relative;left:8%;top:10px;bottom:50px' border='1'>
+			<th>
+			{% for i in list %}
+			
+			<td>{{i}}</td>
+			
+			{% endfor %}
+			</th>
+		{% for item in data %}
+			<tr>
+				<td>{{item.id}}</td>
+				<td class="td-1">{{item.name}}</td>
+				<td class="td-1">{{item.email}}</td>
+				<td class="td-1">{{item.memo}}</td>
+				<td>{% mymethod2 item.user_type %}</td>			
+				<td>{{item.atime|date:"Y-m-d H:i:s"}}</td>
+				<td>{{item.ctime|date:"Y-m-d H:i:s"}}</td>
+				<td style='border-style:none'><input id={{item.id}} type="button" value="保存" onclick="javascript:submitdata(this)"/></td>
+			</tr>
+			
+		{% endfor %}
+		
+	</table>
+
+
+</body>
+</html>
+
+<script type="text/javascript" src="/static/js/jquery-3.2.1.min.js"></script>
+<script type="text/javascript">
+var jishi=document.getElementsByClassName("td-1");
+			//遍历数组，给每个td添加点击事件
+			for(var j=0;j<jishi.length;j++){
+				jishi[j].onclick=function(){
+				//首先要创造个输入框
+				var shuru=document.createElement("input");
+				//给输入框添加类型，因为输入框有很多的类型
+				shuru.type="text";
+				//输入框的内容是本身就有的，获取它的内容，用指针来代替
+				shuru.value=this.innerText;
+				var shuru1=shuru.value
+				//把td的内容清空，然后把新建的节点加给它
+				this.innerHTML="";
+				this.appendChild(shuru);
+				shuru.onblur=function(){
+					shuru.parentNode.innerHTML=shuru.value;
+				}
+				shuru.focus();
+				}
+			}
+backtop.onclick = function(){
+	document.body.scrollTop = document.documentElement.scrollTop = 0;
+}
+function submitdata(obj){
+	//alert('数据提交成功');
+	var subname=obj.parentNode.parentNode.childNodes[3].innerHTML;
+	var submail=obj.parentNode.parentNode.childNodes[5].innerHTML;
+	var submemo=obj.parentNode.parentNode.childNodes[7].innerHTML;
+	$.ajax({
+		url:"/ad/userupdate/",
+		data:{Id:obj.id,Name:subname,Email:submail,Memo:submemo,csrfmiddlewaretoken: '{{ csrf_token }}'},
+		type:'POST',
+		success:function(data){
+			//console.log('success');
+			if (data=='0') {
+				alert("用户名不能相同");
+				window.location.reload();
+			}else{
+				alert("数据提交成功");
+			}
+		},
+		error:function(data){
+			alert('提交异常');
+		},
+	});
+}
+</script>
+{% endblock %}

@@ -1,0 +1,124 @@
+{% extends "master/layout.html" %}
+{% load oldboy %}
+{% block content %}
+
+<h2 style='position:relative;left:3%'>报警规则</h2>
+	<form action='/ad/monitor/warning/' method='POST'>{% csrf_token %}
+		<table style='position:relative;left:8%;top:10px;bottom:50px' border='1'>
+			<th>
+				<td>告警名</td>
+				<td>触发器</td>
+				<td>监控时长</td>
+				<td>次数</td>
+				<td>比较符</td>
+				<td>数据</td>
+				<td>告警</td>
+				<td></td>
+			</th>		
+			{% for item in data%}
+			
+			
+			<tr name="RuleIndextable">
+				<td>{{item.id}}</td>
+				<td >{% get_rule_index_name item.name%}</td>
+				<td >{{item.triggers.name}}</td>
+				<td>{{item.time}}分钟</td>
+				<td>{% get_rule_index_triggers_times item.triggers_times %}</td>
+				<td>{% get_triggers_diff item.triggers_diff %}</td>
+				<td>{{item.triggers_value}}</td>
+				{% autoescape off %}
+				<td>{% get_warning_message item.warning %}</td>
+				{% endautoescape %}
+				<td style='border-style:none'><input id={{item.id}} type="button" value="保存" onclick="javascript:submitdata(this)"/></td>
+			</tr>		
+			{% endfor %}
+
+			<!-- <tr name="assettable">
+				<td>{{item.id}}</td>
+				<td id="1000name">{% mymethod item.id %}</td>
+				<td ><input name="hostname"/></td>
+				<td ><input name="ip"/></td>
+				<td>{{item.create_date|date:"Y-m-d H:i:s"}}</td>
+				<td>{{item.update_date|date:"Y-m-d H:i:s"}}</td>
+				<td ><select name="groupid">
+					<option value=2>运维组</option>
+					<option value=1>管理组</option>
+				</select></td>
+				<td style='border-style:none'><input type='submit' value='新增'/></td>
+			</tr> -->
+		
+		</table>
+	</form>
+<h2 style='position:relative;left:3%'>新增报警规则</h2>
+
+<form action='/ad/monitor/warning/' method='POST'>{% csrf_token %}
+<table style='position:relative;left:8%;top:0px;bottom:50px' >
+				<tr name="new_asset_table">
+				<td></td>
+				<td>{{form2.name}}</td>
+				<td><select name="triggers">
+					{% for i in form %}
+					<option  value="{{i.id}}">{{i.name}}</option>
+					{% endfor  %}
+				</select></td>
+				<td>{{form2.time}}</td>
+				<td>{{form2.triggers_times}}</td>
+				<td>{{form2.triggers_diff}}</td>
+				<td>{{form2.triggers_value}}</td>
+				<td><input type='submit' value='新增'/></td>
+			</tr>
+</table>
+</form>	
+<img style="position:fixed;right:150px;bottom:134px;height:34px;width:34px" src="/static/img/sanjiaoxing2.png" />
+<button id="backtop" style="position:fixed;right:150px;bottom:100px;height:34px;width:34px">Top</button>
+<script type="text/javascript" src="/static/js/jquery-3.2.1.min.js"></script>
+<script type="text/javascript">
+var jishi=document.getElementsByClassName("td-1");
+			//遍历数组，给每个td添加点击事件
+			for(var j=0;j<jishi.length;j++){
+				jishi[j].onclick=function(){
+				//首先要创造个输入框
+				var shuru=document.createElement("input");
+				//给输入框添加类型，因为输入框有很多的类型
+				shuru.type="text";
+				//输入框的内容是本身就有的，获取它的内容，用指针来代替
+				shuru.value=this.innerText;
+				var shuru1=shuru.value
+				//把td的内容清空，然后把新建的节点加给它
+				this.innerHTML="";
+				this.appendChild(shuru);
+				shuru.onblur=function(){
+					shuru.parentNode.innerHTML=shuru.value;
+				}
+				shuru.focus();
+				}
+			}
+backtop.onclick = function(){
+	document.body.scrollTop = document.documentElement.scrollTop = 0;
+}
+function submitdata(obj){
+	//alert('数据提交成功');
+	var subhm=obj.parentNode.parentNode.childNodes[5].innerHTML;
+	var subip=obj.parentNode.parentNode.childNodes[7].innerHTML;
+	$.ajax({
+		url:"/ad/assetupdate/",
+		data:{id:obj.id,hostname:subhm,ip:subip,csrfmiddlewaretoken: '{{ csrf_token }}'},
+		type:'POST',
+		success:function(data){
+			//console.log('success');
+			alert(data);
+		},
+		error:function(data){
+			console.log(data);
+		},
+	});
+}
+</script>
+<script language="JavaScript">  
+        //动态刷新页面—2016年7月27日16:24:26  
+        function myrefresh() {  
+            window.location.reload();  
+        }  
+        setTimeout('myrefresh()', 30000); //指定30秒刷新一次  
+    </script>
+{% endblock %}

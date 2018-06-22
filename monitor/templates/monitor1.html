@@ -1,0 +1,134 @@
+{% extends "master/layout.html" %}
+{% load oldboy %}
+{% block content %}
+
+<h2 style='position:relative;left:3%'>主机监控</h2>
+		<table style='position:relative;left:8%;top:10px;bottom:50px;border:1px ' border='1'>
+			<th>
+				<td>主机名</td>
+				<td>ip</td>
+				<td id="th1" onclick="SortTable(this)">CPU使用率 <img style="height:15px;width:15px" src="/static/img/sort.png" /></td>
+				<td id="th2" onclick="SortTable(this)">内存使用率 <img style="height:15px;width:15px" src="/static/img/sort.png" /></td>
+				<td id="th3" onclick="SortTable(this)">磁盘使用率 <img style="height:15px;width:15px" src="/static/img/sort.png" /></td>
+			</th>		
+			
+			
+			{% for item in data%}
+			<tr name="RuleIndextable">
+				<td name="td4" style="width:50px"><a target="_blank" href="/ad/monitor/{{item.host}}"><img style="height:15px;width:25px" src="/static/img/wxb报表.png"></a></td>
+				<td name="td0" style="width:200px">{{item.host}}</td>
+				<td name="td5" style="width:200px">{{item.ip}}</td>
+				<td name="td1" style="width:200px">{{item.cpu}}</td>
+				<td name="td2" style="width:200px">{{item.mem}}</td>
+				<td name="td3" style="width:200px">{{item.disk}}</td>
+			</tr>		
+			{% endfor %}
+			
+			
+		
+		</table>
+
+<img style="position:fixed;right:150px;bottom:134px;height:34px;width:34px" src="/static/img/sanjiaoxing2.png" />
+<button id="backtop" style="position:fixed;right:150px;bottom:100px;height:34px;width:34px">Top</button>
+<script type="text/javascript" src="/static/js/jquery-3.2.1.min.js"></script>
+<script type="text/javascript">
+var jishi=document.getElementsByClassName("td-1");
+			//遍历数组，给每个td添加点击事件
+			for(var j=0;j<jishi.length;j++){
+				jishi[j].onclick=function(){
+				//首先要创造个输入框
+				var shuru=document.createElement("input");
+				//给输入框添加类型，因为输入框有很多的类型
+				shuru.type="text";
+				//输入框的内容是本身就有的，获取它的内容，用指针来代替
+				shuru.value=this.innerText;
+				var shuru1=shuru.value
+				//把td的内容清空，然后把新建的节点加给它
+				this.innerHTML="";
+				this.appendChild(shuru);
+				shuru.onblur=function(){
+					shuru.parentNode.innerHTML=shuru.value;
+				}
+				shuru.focus();
+				}
+			}
+backtop.onclick = function(){
+	document.body.scrollTop = document.documentElement.scrollTop = 0;
+}
+var tag=1;
+    function sortNumberAS(a, b)
+    {
+        return a - b    
+    }
+    function sortNumberDesc(a, b)
+    {
+        return b-a
+    }
+
+    function SortTable(obj){
+		var td4s=document.getElementsByName("td4");
+        var td0s=document.getElementsByName("td0");
+		var td5s=document.getElementsByName("td5");
+        var td1s=document.getElementsByName("td1");
+        var td2s=document.getElementsByName("td2");
+        var td3s=document.getElementsByName("td3");
+		var tdArray4=[];
+        var tdArray0=[];
+		var tdArray5=[];
+        var tdArray1=[];
+        var tdArray2=[];
+        var tdArray3=[];
+		for(var i=0;i<td4s.length;i++){
+            tdArray4.push(td4s[i].innerHTML);
+        }
+        for(var i=0;i<td0s.length;i++){
+            tdArray0.push(td0s[i].innerHTML);
+        }
+		for(var i=0;i<td5s.length;i++){
+            tdArray5.push(td5s[i].innerHTML);
+        }
+        for(var i=0;i<td1s.length;i++){
+            tdArray1.push(parseFloat(td1s[i].innerHTML));
+        }
+        for(var i=0;i<td2s.length;i++){
+            tdArray2.push(parseFloat(td2s[i].innerHTML));
+        }
+        for(var i=0;i<td3s.length;i++){
+            tdArray3.push(parseFloat(td3s[i].innerHTML));
+        }
+        var tds=document.getElementsByName("td"+obj.id.substr(2,1));
+        var columnArray=[];
+        for(var i=0;i<tds.length;i++){
+            columnArray.push(parseFloat(tds[i].innerHTML));
+        }
+        var orginArray=[];
+        for(var i=0;i<columnArray.length;i++){
+            orginArray.push(columnArray[i]);
+        }
+        if(obj.className=="as"){
+            columnArray.sort(sortNumberAS);               //排序后的新值
+            obj.className="desc";
+        }else{
+            columnArray.sort(sortNumberDesc);               //排序后的新值
+            obj.className="as";
+        }
+
+
+        for(var i=0;i<columnArray.length;i++){
+            for(var j=0;j<orginArray.length;j++){
+                if(orginArray[j]==columnArray[i]){
+					document.getElementsByName("td4")[i].innerHTML=tdArray4[j];
+                    document.getElementsByName("td0")[i].innerHTML=tdArray0[j];
+					document.getElementsByName("td5")[i].innerHTML=tdArray5[j];
+                    document.getElementsByName("td1")[i].innerHTML=tdArray1[j];
+                    document.getElementsByName("td2")[i].innerHTML=tdArray2[j];
+                    document.getElementsByName("td3")[i].innerHTML=tdArray3[j];
+                    orginArray[j]=null;
+                    break;
+                }
+            }
+        }
+    }
+</script>
+
+{% endblock %}

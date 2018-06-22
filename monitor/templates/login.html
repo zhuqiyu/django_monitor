@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+    <title>华熙现场监控-欢迎登录</title>
+	<!-- <link rel="icon" href="favicon.ico"/> -->
+    <link rel="icon" href="/static/img/favicon.ico"/>
+    <link type="text/css" rel="stylesheet"
+          href="/static/css/login.css"/>
+	<script src="http://cdn.bootcss.com/blueimp-md5/1.1.0/js/md5.js"></script>   
+	<script src="http://cdn.bootcss.com/blueimp-md5/1.1.0/js/md5.min.js"></script>
+	<script>
+	function checkInput() {
+    var password = document.getElementById('password');
+    <!-- var password_md5 = document.getElementById('password_md5'); -->
+
+    // set password
+    password.value =  md5(password.value);
+    return true;
+	}
+	</script>
+	</head>
+
+<body>
+
+<div><a href='http://www.huaxiweiying.com/'><img src="/static/img/page_logo.gif" alt="华熙现场官网" /></a></div>
+<div  class="micro-title1"><img src='/static/img/pic6.jpg' alt='二维码' /></div>
+<div class='login-box1'>
+	<a href='http://wks.bloomagelive.com/'><img style="width:660px" src='/static/img/AI.png' alt='aryn'  /></a>
+</div>
+<div class='login-box2'>
+		<form action='/ad/login/'  onsubmit="checkInput()" method='POST'><span style="color:#FF0000;">{% csrf_token %}</span> 
+		{% csrf_token %}
+		<div>
+			<label class='th-box'>账户：&nbsp;</label><input name='username' style='position:relative;left:1.2px' class='th-submit'/>
+		</div>
+		<div style='padding-top:10px'>
+			<label class='th-box'>密码：&nbsp;</label><input name='password' id="password" type='password' style='position:relative;left:1.2px' class='th-submit'/>
+			<!-- <input type="hidden" id="password_md5" name="password"> -->
+			<span style='position:fixed;left:78%;top:39.5%' >{{status}}</span>
+		</div>
+		<!--<div>-->
+			<!--<img src="/ad/auth/" onclick="this.src='/ad/auth/?'+Math.random()"><span style="position:relative;width:50px;bottom:12px">蓝色验证码</span><input style="position:relative;left:20px;width:84px;bottom:12px" name="auth_code_client"/>-->
+		<!--</div>-->
+		<div style="position:  relative;">
+			<div style="display:  inline-block;"><img name="img_code" src="/ad/auth/?0.42844671870369355" onclick="this.src='/ad/auth/?'+Math.random()"></div>
+				<div style="position: absolute;left: 100px;top: 10px;">输入蓝色验证码</div>
+				<input style="position: absolute;right: 2px;width:84px;top: 10px;" name="auth_code_client"><div style="position:fixed;left:78%;top:43%">{{code_status}}</div>
+		</div>
+		<div >
+		<label ><input  class='logo-submit'  type='submit' value='登陆'/></label></div>
+		</form>
+		<div style='padding-top:10px'>
+		<a href='/ad/register' target='_blank'><label ><input class='logo-submit' type='button' value='立即注册'/></label></a>
+		</div>
+</div>
+
+<div class='bottom-sty' style="position:fixed;left:40%">
+
+	<h5>©华熙现场科技有限公司    <span style="color:black">版权所有</span> <a href="http://www.miitbeian.gov.cn"><span style="color:black">京ICP备16047864号-1</span></h5></a>
+
+</div>
+
+
+
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

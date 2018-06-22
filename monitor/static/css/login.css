@@ -1,0 +1,104 @@
+		.micro-title1 {
+		position:fixed;
+		top:100px;
+		left:71%;
+		margin-left:-145px;
+		}
+		.login-box1 {
+		position:fixed;
+		top:100px;
+		left:25%;
+		width:310px;
+		padding:20px;
+		margin-left:-205px;
+		}
+		.login-box2 {
+		position:fixed;
+		top:310px;
+		left:70%;
+		width:310px;
+		padding:20px;
+		margin-left:-205px;
+		margin-top:10px;
+		height:10px;
+		border:10px;
+		}
+		.logo-submit {
+		height:30px;
+		width:310px;
+		}
+		.th-box {
+		width:50px;
+		}
+		.th-submit {
+		width:250px;
+		height:18px;
+		}
+		.bottom-sty {
+		position:fixed;
+		bottom:0;
+		left:40%;
+		color:#ff0000;
+		padding-left:10px;
+		}
+		a {
+		color:#333;
+		text-decoration:none;
+		}
+		a:hover {
+		color:#F00;
+		text-decoration:underline;
+		}
+		a:active {
+		color:#30F;
+		}
+		.body-1 {
+		background-color:green;
+		}
+		.micro-title2 {
+		position:fixed;
+		top:150px;
+		left:50%;
+		margin-left:-170px;
+		}
+		.big-sum2 {
+		position:relative;
+		left:50%;
+		top:295px;
+		height:31.5px;
+		margin-left:+170px;
+		}
+		.login-box3 {
+		position:fixed;
+		top:250px;
+		left:50%;
+		width:310px;
+		padding:20px;
+		margin-left:-205px;
+		}
+		.logo-submit2 {
+		width:310px;
+		}
+		.th-box2 {
+		width:75px;
+		}
+		.th-submit2 {
+		width:225px;
+		height:18px;
+		}
+		.f {
+            border: solid 1px red;
+            width: 100px;
+            height: 100px;
+            position: relative;
+            background-color: transparent;
+        }
+		.footer {
+			
+		}
+		.fixed-bottom {
+			position:absolute;
+			left:40%;
+			color:#ff0000;
+			padding-left:10px;
+		}

@@ -1,0 +1,53 @@
+Language: python
+Django version: 2.0.1
+Author: Zhuqi Yu
+Time: 2018/06/20
+
+This is a monitor system
+
+# INSTALL
+python3 -m pip install -r requirements.txt
+# or
+pip install -r requirements.txt
+
+
+# settings
+
+please set this args
+1. DEBUG    # default True
+2. ALLOWED_HOSTS # default 127.0.0.1
+3. DATABASES  # you need set your database
+4. other
+
+
+# Logic
+
+
+
+----/monitor/ ----- settings        # this is settings
+              ----- urls            # this is url
+
+----/static/  ----- css ---         # this is css dir
+              ----- fonts ---       # this is fonts dir
+              ----- img ---         # this is image dir
+              ----- js ---          # this is js dir
+
+----/templates/ ---- master ---     # this is module html dir
+
+----/ad/    ---- templatetags       # this is module method dir
+            ---- migrations         # this is databases migrations recode dir
+            ---- Authcode           # this is authenticate code
+            ---- forms              # this is django forms
+            ---- models             # this is django databases models
+            ---- urls               # this is ad apps urls
+            ---- views              # this is django views
+
+
+# server
+chmod +x monitor_check.py
+chmod +x monitor.py
+cat crontab >> /etc/crontab
+
+# client
+chmod +x monitor.py
+

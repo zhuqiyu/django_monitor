@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+    <title>华熙现场-监控系统</title>
+	<!-- <link rel="icon" href="favicon.ico"/> -->
+    <link rel="icon" href="/static/img/favicon.ico"/>
+    <link type="text/css" rel="stylesheet"
+          href="/static/css/login.css"/>
+	<script src="http://cdn.bootcss.com/blueimp-md5/1.1.0/js/md5.js"></script>   
+	<script src="http://cdn.bootcss.com/blueimp-md5/1.1.0/js/md5.min.js"></script>
+	<script>
+	function checkInput() {
+    var password = document.getElementById('password');
+    <!-- var password_md5 = document.getElementById('password_md5'); -->
+
+    // set password
+    password.value =  md5(password.value);
+    return true;
+	}
+	</script>
+</head>
+<body>
+
+<div >
+<ul>
+	<li><a href='/ad/userlist/'>用户管理</a></li>
+	<li><a href='/ad/assetlist/'>资产管理</a></li>
+	<li><a href='/ad/monitor1/'>主机监控</a><ul>
+		<li><a href='/ad/monitor/hostgroup/'>主机组</a></li>
+		<li><a href='/ad/monitor/templates/'>主机模板</a></li>
+		<li><a href='/ad/monitor/triggers/'>主机触发器</a></li>
+		<li><a href='/ad/monitor/warning/'>告警规则</a></li>
+	</ul></li>
+</ul>
+</div>
+{% load oldboy %}
+
+
+<h2 style='position:relative;left:3%'>主机数据</h2>
+	<form action='/ad/monitor/warning/' method='POST'>{% csrf_token %}
+		<table style='position:relative;left:8%;top:10px;bottom:50px' border='1'>
+			
+			<th>
+				<td>主机组</td>
+				<td>模板</td>
+				
+				<td>主机</td>
+				
+			</th>		
+			
+			
+			
+			<tr name="message">
+				<td>{{host_group.id}}</td>
+				<td >{{host_group.name}}</td>
+				<td>{{host_group.templates.name}}</td>
+				<td>{{host_list}}</td>
+				<td>{{data}}</td>
+				
+			</tr>		
+			
+			
+			<!-- <tr name="assettable">
+				<td>{{item.id}}</td>
+				<td id="1000name">{% mymethod item.id %}</td>
+				<td ><input name="hostname"/></td>
+				<td ><input name="ip"/></td>
+				<td>{{item.create_date|date:"Y-m-d H:i:s"}}</td>
+				<td>{{item.update_date|date:"Y-m-d H:i:s"}}</td>
+				<td ><select name="groupid">
+					<option value=2>运维组</option>
+					<option value=1>管理组</option>
+				</select></td>
+				<td style='border-style:none'><input type='submit' value='新增'/></td>
+			</tr> -->
+		
+		</table>
+	</form>
+
+
+<img style="position:fixed;right:150px;bottom:134px;height:34px;width:34px" src="/static/img/sanjiaoxing2.png" />
+<button id="backtop" style="position:fixed;right:150px;bottom:100px;height:34px;width:34px">Top</button>
+<script type="text/javascript" src="/static/js/jquery-3.2.1.min.js"></script>
+<script type="text/javascript">
+var jishi=document.getElementsByClassName("td-1");
+			//遍历数组，给每个td添加点击事件
+			for(var j=0;j<jishi.length;j++){
+				jishi[j].onclick=function(){
+				//首先要创造个输入框
+				var shuru=document.createElement("input");
+				//给输入框添加类型，因为输入框有很多的类型
+				shuru.type="text";
+				//输入框的内容是本身就有的，获取它的内容，用指针来代替
+				shuru.value=this.innerText;
+				var shuru1=shuru.value
+				//把td的内容清空，然后把新建的节点加给它
+				this.innerHTML="";
+				this.appendChild(shuru);
+				shuru.onblur=function(){
+					shuru.parentNode.innerHTML=shuru.value;
+				}
+				shuru.focus();
+				}
+			}
+backtop.onclick = function(){
+	document.body.scrollTop = document.documentElement.scrollTop = 0;
+}
+function submitdata(obj){
+	//alert('数据提交成功');
+	var subhm=obj.parentNode.parentNode.childNodes[5].innerHTML;
+	var subip=obj.parentNode.parentNode.childNodes[7].innerHTML;
+	$.ajax({
+		url:"/ad/assetupdate/",
+		data:{id:obj.id,hostname:subhm,ip:subip,csrfmiddlewaretoken: '{{ csrf_token }}'},
+		type:'POST',
+		success:function(data){
+			//console.log('success');
+			alert(data);
+		},
+		error:function(data){
+			console.log(data);
+		},
+	});
+}
+</script>
+
+<div style="position:relative;min-height:50px">
+<div style="margin-bottom:60px"></div>
+<div style="absolute: fixed;  bottom: 0;height: 60px;margin-left:40%">
+
+	<h5>©华熙现场科技有限公司    <span style="color:black">版权所有</span> <a href="http://www.miitbeian.gov.cn"><span style="color:black">京ICP备16047864号-1</span></a ></h5>
+
+</div>
+</div>

@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+    <title>华熙现场-监控系统</title>
+    <link rel="icon" href="/static/img/favicon.ico"/>
+    <link type="text/css" rel="stylesheet"
+          href="/static/css/login.css"/>
+</head>
+<body>
+
+<div >
+<ul>
+	<li><a href='/ad/userlist/'>用户管理</a></li>
+	<li><a href='/ad/assetlist/'>资产管理</a></li>
+	<li><a href='/ad/monitor1/'>主机监控</a><ul>
+		<li><a href='/ad/monitor/hostgroup/'>主机组</a></li>
+		<li><a href='/ad/monitor/templates/'>主机模板</a></li>
+		<li><a href='/ad/monitor/triggers/'>主机触发器</a></li>
+		<li><a href='/ad/monitor/warning/'>告警规则</a></li>
+	</ul></li>
+</ul>
+</div>
+{% load oldboy %}
+
+<div id="cpuChart" style="width:100%;height:250px"></div>
+<div id="loadChart" style="width:100%;height:250px"></div>
+<div id="iopsChart" style="width:100%;height:250px"></div>
+<div id="diskChart" style="width:100%;height:250px"></div>
+<div id="inodeChart" style="width:100%;height:250px"></div>
+<div id="NICsentChart" style="width:100%;height:250px"></div>
+<div id="NICrecvChart" style="width:100%;height:250px"></div>
+<div id="NICconnChart" style="width:100%;height:250px"></div>
+
+
+
+<img style="position:fixed;right:100px;bottom:134px;height:34px;width:34px" src="/static/img/sanjiaoxing2.png"/>
+<button id="backtop" style="position:fixed;right:100px;bottom:100px;height:34px;width:34px">Top</button>
+<script type="text/javascript" src="/static/js/jquery-3.2.1.min.js"></script>
+<script src="/static/js/echarts.min.js"></script>
+<script type="text/javascript">
+var data = {{data|safe}}
+var TIMEDATA = [];
+var CPU = data["cpu"];
+var MEMCACHE = data["memcache"];
+var TIME1 = data["time"]
+// load 
+var LOAD_1M = data["load"]["load_1m"]
+var LOAD_5M = data["load"]["load_5m"]
+var LOAD_15M = data["load"]["load_15m"]
+// disk iops
+var IOPS_SDA = data["IOPS"]["sda"]
+var IOPS_SDB = data["IOPS"]["sdb"]
+var IOPS_SDC = data["IOPS"]["sdc"]
+var IOPS_SDD = data["IOPS"]["sdd"]
+var IOPS_VDA = data["IOPS"]["vda"]
+var IOPS_VDB = data["IOPS"]["xvdb"]
+var IOPS_XVDA = data["IOPS"]["xvda"]
+var IOPS_XVDB = data["IOPS"]["xvdb"]
+// disk used percent
+var DISK_root = data['diskpercent']["/dev/mapper/centos-root"]
+var DISK_sda1 = data['diskpercent']["/dev/sda1"]
+var DISK_sda2 = data['diskpercent']["/dev/sda2"]
+var DISK_sdb1 = data['diskpercent']["/dev/sdb1"]
+var DISK_sdb2 = data['diskpercent']["/dev/sdb2"]
+var DISK_sdc1 = data['diskpercent']["/dev/sdc1"]
+var DISK_sdd1 = data['diskpercent']["/dev/sdd1"]
+var DISK_vda1 = data['diskpercent']["/dev/vda1"]
+var DISK_vdb1 = data['diskpercent']["/dev/vdb1"]
+var DISK_xvda1 = data['diskpercent']["/dev/xvda1"]
+var DISK_xvdb1 = data['diskpercent']["/dev/xvdb1"]
+// disk inode
+var DISK_inode_root = data['inode']["/dev/mapper/centos-root"]
+var DISK_inode_sda1 = data['inode']["/dev/sda1"]
+var DISK_inode_sda2 = data['inode']["/dev/sda2"]
+var DISK_inode_sdb1 = data['inode']["/dev/sdb1"]
+var DISK_inode_sdb2 = data['inode']["/dev/sdb2"]
+var DISK_inode_sdc1 = data['inode']["/dev/sdc1"]
+var DISK_inode_sdd1 = data['inode']["/dev/sdd1"]
+var DISK_inode_vda1 = data['inode']["/dev/vda1"]
+var DISK_inode_vdb1 = data['inode']["/dev/vdb1"]
+var DISK_inode_xvda1 = data['inode']["/dev/xvda1"]
+var DISK_inode_xvdb1 = data['inode']["/dev/xvdb1"]
+// NIC sentbyte, This is usually a charge item
+var NIC_sentbyte_eth0 = data["sentbyte"]["eth0"]
+var NIC_sentbyte_eth1 = data["sentbyte"]["eth1"]
+var NIC_sentbyte_eth2 = data["sentbyte"]["eth2"]
+var NIC_sentbyte_eth3 = data["sentbyte"]["eth3"]
+var NIC_sentbyte_docker0 = data["sentbyte"]["docker0"]
+// NIC recvbyte, This is usually a free item
+var NIC_recvbyte_eth0 = data["recvbyte"]["eth0"]
+var NIC_recvbyte_eth1 = data["recvbyte"]["eth1"]
+var NIC_recvbyte_eth2 = data["recvbyte"]["eth2"]
+var NIC_recvbyte_eth3 = data["recvbyte"]["eth3"]
+var NIC_recvbyte_docker0 = data["recvbyte"]["docker0"]
+// NIC connection
+var NIC_ESTABLISHED = data["connections"]["ESTABLISHED"]
+var NIC_TOTAL = data["connections"]["TOTAL"]
+var NIC_LISTEN = data["connections"]["LISTEN"]
+var NIC_other = []
+for(var i=0;i<NIC_TOTAL.length;i++){
+	var new_non_established = NIC_TOTAL[i] - NIC_ESTABLISHED[i] - NIC_LISTEN[i];
+	NIC_other.push(new_non_established);
+}
+
+for(var i=0;i<TIME1.length;i++){
+	var tiems = TIME1[i];
+	var newtime = formatDateTime(tiems);
+	TIMEDATA.push(newtime);
+}
+function formatDateTime(inputTime) {    
+    var date = new Date(inputTime*1000);  
+    var y = date.getFullYear();    
+    var m = date.getMonth() + 1;    
+    m = m < 10 ? ('0' + m) : m;    
+    var d = date.getDate();    
+    d = d < 10 ? ('0' + d) : d;    
+    var h = date.getHours();  
+    h = h < 10 ? ('0' + h) : h;  
+    var minute = date.getMinutes();  
+    var second = date.getSeconds();  
+    minute = minute < 10 ? ('0' + minute) : minute;    
+    second = second < 10 ? ('0' + second) : second;   
+    return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;    
+};  
+/*图表绘制*/
+
+var MyCharts = echarts.init(document.getElementById('cpuChart'));
+MyCharts.setOption({
+	title: {
+        text: 'CPU和内存趋势图'
+    },
+	tooltip : {
+        trigger: 'axis',
+        axisPointer: {
+            type: 'cross'
+        }
+    },
+    legend: {
+        data:['CPU','MEMCACHE']
+    },
+	xAxis: {
+        type: 'category',
+        data: TIMEDATA,
+    },
+    yAxis: {
+        type: 'value'
+    },
+    series: [
+	{
+		name: 'CPU',
+        data: CPU,
+        type: 'line'
+    },{
+		name: 'MEMCACHE',
+		data: MEMCACHE,
+		type: 'line',
+	}
+	]
+});
+
+var MyCharts = echarts.init(document.getElementById('loadChart'));
+MyCharts.setOption({
+	title: {
+        text: '负载趋势图'
+    },
+	tooltip : {
+        trigger: 'axis',
+        axisPointer: {
+            type: 'cross'
+        }
+    },
+	xAxis: {
+        type: 'category',
+        data: TIMEDATA,
+    },
+    yAxis: {
+        type: 'value'
+    },
+    series: [
+	{
+		name: 'load_1m',
+        data: LOAD_1M,
+        type: 'line'
+    },{
+		name: 'load_5m',
+		data: LOAD_5M,
+		type: 'line',
+	},{
+		name: 'load_15m',
+		data: LOAD_15M,
+		type: 'line',
+	}
+	]
+});
+
+var MyCharts = echarts.init(document.getElementById('iopsChart'));
+MyCharts.setOption({
+	title: {
+        text: 'IOPS趋势图'
+    },
+	tooltip : {
+        trigger: 'axis',
+        axisPointer: {
+            type: 'cross'
+        }
+    },
+	xAxis: {
+        type: 'category',
+        data: TIMEDATA,
+    },
+    yAxis: {
+        type: 'value'
+    },
+    series: [
+	{
+		name: 'IOPS_sda',
+        data: IOPS_SDA,
+        type: 'line'
+    },{
+		name: 'IOPS_sdb',
+		data: IOPS_SDB,
+		type: 'line',
+	},{
+		name: 'IOPS_sdc',
+		data: IOPS_SDC,
+		type: 'line',
+	},{
+		name: 'IOPS_sdd',
+		data: IOPS_SDD,
+		type: 'line',
+	},{
+		name: 'IOPS_vda',
+		data: IOPS_VDA,
+		type: 'line',
+	},{
+		name: 'IOPS_vdb',
+		data: IOPS_VDB,
+		type: 'line',
+	},{
+		name: 'IOPS_xvda',
+		data: IOPS_XVDA,
+		type: 'line',
+	},{
+		name: 'IOPS_xvdb',
+		data: IOPS_XVDB,
+		type: 'line',
+	}
+	]
+});
+
+var MyCharts = echarts.init(document.getElementById('diskChart'));
+MyCharts.setOption({
+	title: {
+        text: '磁盘使用量'
+    },
+	tooltip : {
+        trigger: 'axis',
+        axisPointer: {
+            type: 'cross'
+        }
+    },
+	xAxis: {
+        type: 'category',
+        data: TIMEDATA,
+    },
+    yAxis: {
+        type: 'value'
+    },
+    series: [
+	{
+		name: 'DISK_/',
+        data: DISK_root,
+        type: 'line'
+    },{
+		name: 'DISK_sda1',
+		data: DISK_sda1,
+		type: 'line',
+	},{
+		name: 'DISK_sda2',
+		data: DISK_sda2,
+		type: 'line',
+	},{
+		name: 'DISK_sdb1',
+		data: DISK_sdb1,
+		type: 'line',
+	},{
+		name: 'DISK_sdb2',
+		data: DISK_sdb2,
+		type: 'line',
+	},{
+		name: 'DISK_sdc1',
+		data: DISK_sdc1,
+		type: 'line',
+	},{
+		name: 'DISK_sdd1',
+		data: DISK_sdd1,
+		type: 'line',
+	},{
+		name: 'DISK_vda1',
+		data: DISK_vda1,
+		type: 'line',
+	},{
+		name: 'DISK_vdb1',
+		data: DISK_vdb1,
+		type: 'line',
+	},{
+		name: 'DISK_xvda1',
+		data: DISK_xvda1,
+		type: 'line',
+	},{
+		name: 'DISK_xvdb1',
+		data: DISK_xvdb1,
+		type: 'line',
+	}
+	]
+});
+
+var MyCharts = echarts.init(document.getElementById('inodeChart'));
+MyCharts.setOption({
+	title: {
+        text: 'Inode使用量'
+    },
+	tooltip : {
+        trigger: 'axis',
+        axisPointer: {
+            type: 'cross'
+        }
+    },
+	xAxis: {
+        type: 'category',
+        data: TIMEDATA,
+    },
+    yAxis: {
+        type: 'value'
+    },
+    series: [
+	{
+		name: 'inode_/',
+        data: DISK_inode_root,
+        type: 'line'
+    },{
+		name: 'inode_sda1',
+		data: DISK_inode_sda1,
+		type: 'line',
+	},{
+		name: 'inode_sda2',
+		data: DISK_inode_sda2,
+		type: 'line',
+	},{
+		name: 'inode_sdb1',
+		data: DISK_inode_sdb1,
+		type: 'line',
+	},{
+		name: 'inode_sdb2',
+		data: DISK_inode_sdb2,
+		type: 'line',
+	},{
+		name: 'inode_sdc1',
+		data: DISK_inode_sdc1,
+		type: 'line',
+	},{
+		name: 'inode_sdd1',
+		data: DISK_inode_sdd1,
+		type: 'line',
+	},{
+		name: 'inode_vda1',
+		data: DISK_inode_vda1,
+		type: 'line',
+	},{
+		name: 'inode_vdb1',
+		data: DISK_inode_vdb1,
+		type: 'line',
+	},{
+		name: 'inode_xvda1',
+		data: DISK_inode_xvda1,
+		type: 'line',
+	},{
+		name: 'inode_xvdb1',
+		data: DISK_inode_xvdb1,
+		type: 'line',
+	}
+	]
+});
+
+var MyCharts = echarts.init(document.getElementById('NICsentChart'));
+MyCharts.setOption({
+	title: {
+        text: '网络发送速率'
+    },
+	tooltip : {
+        trigger: 'axis',
+        axisPointer: {
+            type: 'cross'
+        }
+    },
+	xAxis: {
+        type: 'category',
+        data: TIMEDATA,
+    },
+    yAxis: {
+        type: 'value'
+    },
+    series: [
+	{
+		name: 'eth0',
+        data: NIC_sentbyte_eth0,
+        type: 'line'
+    },{
+		name: 'eth1',
+		data: NIC_sentbyte_eth1,
+		type: 'line',
+	},{
+		name: 'eth2',
+		data: NIC_sentbyte_eth2,
+		type: 'line',
+	},{
+		name: 'eth3',
+		data: NIC_sentbyte_eth3,
+		type: 'line',
+	},{
+		name: 'docker0',
+		data: NIC_sentbyte_docker0,
+		type: 'line',
+	}
+	]
+});
+
+var MyCharts = echarts.init(document.getElementById('NICrecvChart'));
+MyCharts.setOption({
+	title: {
+        text: '网络接收速率'
+    },
+	tooltip : {
+        trigger: 'axis',
+        axisPointer: {
+            type: 'cross'
+        }
+    },
+	xAxis: {
+        type: 'category',
+        data: TIMEDATA,
+    },
+    yAxis: {
+        type: 'value'
+    },
+    series: [
+	{
+		name: 'eth0',
+        data: NIC_recvbyte_eth0,
+        type: 'line'
+    },{
+		name: 'eth1',
+		data: NIC_recvbyte_eth1,
+		type: 'line',
+	},{
+		name: 'eth2',
+		data: NIC_recvbyte_eth2,
+		type: 'line',
+	},{
+		name: 'eth3',
+		data: NIC_recvbyte_eth3,
+		type: 'line',
+	},{
+		name: 'docker0',
+		data: NIC_recvbyte_docker0,
+		type: 'line',
+	}
+	]
+});
+
+var MyCharts = echarts.init(document.getElementById('NICconnChart'));
+MyCharts.setOption({
+	title: {
+        text: '网络连接状态'
+    },
+	tooltip : {
+        trigger: 'axis',
+        axisPointer: {
+            type: 'cross'
+        }
+    },
+	xAxis: {
+        type: 'category',
+        data: TIMEDATA,
+    },
+    yAxis: {
+        type: 'value'
+    },
+    series: [
+	{
+		name: 'TOTAL',
+        data: NIC_TOTAL,
+        type: 'line'
+    },{
+		name: 'ESTABLISHED',
+		data: NIC_ESTABLISHED,
+		type: 'line',
+	},{
+		name: 'OTHER',
+		data: NIC_other,
+		type: 'line',
+	},{
+		name: 'LISTEN',
+		data: NIC_LISTEN,
+		type: 'line',
+	}
+	]
+});
+
+backtop.onclick = function(){
+	document.body.scrollTop = document.documentElement.scrollTop = 0;
+}
+
+function myrefresh() {  
+            window.location.reload();  
+        }  
+        setTimeout('myrefresh()', 300000); //指定30秒刷新一次  
+</script>
+
+<div style="position:relative;min-height:50px">
+<div style="margin-bottom:60px"></div>
+<div style="absolute: fixed;  bottom: 0;height: 60px;margin-left:40%">
+
+	<h5>©华熙现场科技有限公司    <span style="color:black">版权所有</span> <a href="http://www.miitbeian.gov.cn"><span style="color:black">京ICP备16047864号-1</span></a ></h5>
+
+</div>
+</div>

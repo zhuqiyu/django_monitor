@@ -1,0 +1,2 @@
+# commit monitor data
+*/1 * * * * /usr/bin/python /opt/tools/monitor.py
