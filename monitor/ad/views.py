@@ -412,8 +412,8 @@ def server_monitor_warning(request):
             post_warning = 1 - check_num
             try:
                 #form.save()
-                RuleIndex.objects.create(name=post_name, triggers_id=post_triggers, time=post_time,\
-                                         triggers_times=post_triggers_times, triggers_diff=post_triggers_diff,\
+                RuleIndex.objects.create(name=post_name, triggers_id=post_triggers, time=post_time,
+                                         triggers_times=post_triggers_times, triggers_diff=post_triggers_diff,
                                          triggers_value=post_triggers_value, warning=post_warning)
                 return redirect('/ad/monitor/warning/')
             except Exception as e:
@@ -451,7 +451,7 @@ def server_monitor_message(request,id):
                 triggers_value = rule_index.triggers_value
                 # print(triggers_times, triggers_diff, triggers_value)
                 # print(type(triggers_times), type(triggers_diff), type(triggers_value))
-                rule_index_name_choice = ("", "cpupercent", "mempercent", "inode",\
+                rule_index_name_choice = ("", "cpupercent", "mempercent", "inode",
                                           "diskpercent", "IOPS", "sentbyte", "connections", "recvbyte")
                 print(rule_index_name)
                 print(data[rule_index_name_choice[rule_index_name]])
@@ -466,8 +466,11 @@ def server_monitor_message(request,id):
                         # 邮件报警
                         if rule_index.warning > 0 and\
                                 rule_index.warning % triggers_times_choice[rule_index.triggers_times] == 1:
-                            send_mail(hostname, rule_index_name_choice[rule_index_name], result_data)
-                        print(rule_index.warning)
+                            send_mail(hostname,
+                                      host_group.name,
+                                      rule_index_name_choice[rule_index_name],
+                                      result_data)
+                        print(rule_index.warning,host_group.name)
                         break
                     else:
                         print(rule_index.warning - triggers_times_choice[rule_index.triggers_times])
@@ -488,16 +491,21 @@ def server_monitor_message(request,id):
                             temp_last_value = temp_last_data[temp_warning_rule_name][k]
                         else:
                             temp_last_value = 0
-                        if eval(str(result_data[k]).strip("%") + "-" +str(temp_last_value)\
+                        if eval(str(result_data[k]).strip("%") + "-" + str(temp_last_value)
                                 + triggers_diff + str(triggers_value)):
                             if type(result_data[k]) != str:
                                 # 邮件报警
-                                send_mail(hostname, rule_index_name_choice[rule_index_name], result_data[k])
-                                print("参数%s ,当前值为%f" %\
-                                  (rule_index_name_choice[rule_index_name], result_data[k]))
+                                if rule_index.warning > 0 and \
+                                        rule_index.warning % triggers_times_choice[rule_index.triggers_times] == 1:
+                                    send_mail(hostname,
+                                              host_group.name,
+                                              rule_index_name_choice[rule_index_name],
+                                              result_data)
+                                print("参数%s ,当前值为%f" %
+                                      (rule_index_name_choice[rule_index_name], result_data[k]))
                                 print(result_data[k]-temp_last_value)
                             elif type(result_data[k]) == str:
-                                print("参数%s ,当前值为%f" % \
+                                print("参数%s ,当前值为%f" %
                                       (rule_index_name_choice[rule_index_name], int(result_data[k].strip("%"))))
                             # rule_index.warning += 1
                             # rule_index.save()
@@ -525,7 +533,7 @@ def server_monitor_message(request,id):
         return HttpResponse("ok")
 
 
-def send_mail(host, warning_name, warning_value):
+def send_mail(host, host_group,warning_name, warning_value):
     mail_host = "smtp.163.com"  # 设置服务器
     mail_user = "17051018558@163.com"  # 用户名
     mail_pass = "j2H1EsQTJ4qRG89z"  # 口令
@@ -533,7 +541,8 @@ def send_mail(host, warning_name, warning_value):
     sender = '17051018558@163.com'
     receivers = ['17051018558@163.com']
 
-    message = MIMEText("%s 当前发生告警,告警名称为 %s ,当前值为 %f" % (host, warning_name, warning_value), 'plain', 'utf-8')
+    message = MIMEText("主机%s所在主机组%s当前发生告警,告警名称为 %s ,当前值为 %f" % \
+                       (host, host_group, warning_name, warning_value), 'plain', 'utf-8')
     message['From'] = "monitor@huaxixianchang.com"
     message['To'] = "17051018558@163.com"
 
