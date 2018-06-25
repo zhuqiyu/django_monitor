@@ -461,10 +461,14 @@ def server_monitor_message(request,id):
                 if type(result_data) is float or type(result_data) is int:
                     if eval(str(result_data) + triggers_diff + str(triggers_value)):
                         print("参数%s ,当前值为%f" % (rule_index_name_choice[rule_index_name], result_data))
-                        # 邮件报警
-                        send_mail(hostname, rule_index_name_choice[rule_index_name], result_data)
                         rule_index.warning += 1
                         rule_index.save()
+                        # 邮件报警
+                        if rule_index.warning > 0 and\
+                                rule_index.warning % triggers_times_choice[rule_index.triggers_times] == 1:
+                            send_mail(hostname, rule_index_name_choice[rule_index_name], result_data)
+                        print(rule_index.warning)
+                        break
                     else:
                         print(rule_index.warning - triggers_times_choice[rule_index.triggers_times])
                         if rule_index.warning > 0:
