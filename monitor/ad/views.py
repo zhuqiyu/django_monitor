@@ -273,6 +273,8 @@ def AssetList(request):
 def UserList(request):
     if not request.session.get('username',None):
         return redirect('/ad/login/')
+    elif request.session['username'] != "superadmin":
+        return redirect('/ad/assetlist/')
     user_list = UserInfo.objects.all()
     
     user_list_name = ('name','email','memo','typeId','修改时间',u'创建时间')
@@ -521,7 +523,7 @@ def server_monitor_message(request,id):
                         rule_index.warning += 1
                     else:
                         if rule_index.warning > 0:
-                            print("本次告警持续时间为: %d 分钟" % \
+                            print("本次告警持续时间为: %d 分钟" %
                                   ((rule_index.warning - 1 + triggers_times_choice[rule_index.triggers_times]) * 5.0))
                         rule_index.warning = 0
                     rule_index.save()
@@ -541,7 +543,7 @@ def send_mail(host, host_group,warning_name, warning_value):
     sender = '17051018558@163.com'
     receivers = ['17051018558@163.com']
 
-    message = MIMEText("主机%s所在主机组%s当前发生告警,告警名称为 %s ,当前值为 %f" % \
+    message = MIMEText("主机%s 所在主机组 %s 当前发生告警,告警名称为 %s ,当前值为 %f" %
                        (host, host_group, warning_name, warning_value), 'plain', 'utf-8')
     message['From'] = "monitor@huaxixianchang.com"
     message['To'] = "17051018558@163.com"
