@@ -13,6 +13,9 @@ import logging
 import json
 import os
 import time,datetime
+import smtplib
+from email.mime.text import MIMEText
+from email.header import Header
 
 
 def index(request): 
@@ -450,13 +453,16 @@ def server_monitor_message(request,id):
                 # print(type(triggers_times), type(triggers_diff), type(triggers_value))
                 rule_index_name_choice = ("", "cpupercent", "mempercent", "inode",\
                                           "diskpercent", "IOPS", "sentbyte", "connections", "recvbyte")
-                # print(data[rule_index_name_choice[rule_index_name]])
+                print(rule_index_name)
+                print(data[rule_index_name_choice[rule_index_name]])
                 result_data = data[rule_index_name_choice[rule_index_name]]
                 # print(str(result_data) + triggers_diff + str(triggers_value))
                 # print(type(result_data))
                 if type(result_data) is float or type(result_data) is int:
                     if eval(str(result_data) + triggers_diff + str(triggers_value)):
                         print("参数%s ,当前值为%f" % (rule_index_name_choice[rule_index_name], result_data))
+                        # 邮件报警
+                        send_mail(hostname, rule_index_name_choice[rule_index_name], result_data)
                         rule_index.warning += 1
                         rule_index.save()
                     else:
@@ -481,6 +487,8 @@ def server_monitor_message(request,id):
                         if eval(str(result_data[k]).strip("%") + "-" +str(temp_last_value)\
                                 + triggers_diff + str(triggers_value)):
                             if type(result_data[k]) != str:
+                                # 邮件报警
+                                send_mail(hostname, rule_index_name_choice[rule_index_name], result_data[k])
                                 print("参数%s ,当前值为%f" %\
                                   (rule_index_name_choice[rule_index_name], result_data[k]))
                                 print(result_data[k]-temp_last_value)
@@ -513,4 +521,26 @@ def server_monitor_message(request,id):
         return HttpResponse("ok")
 
 
+def send_mail(host, warning_name, warning_value):
+    mail_host = "smtp.163.com"  # 设置服务器
+    mail_user = "17051018558@163.com"  # 用户名
+    mail_pass = "j2H1EsQTJ4qRG89z"  # 口令
 
+    sender = '17051018558@163.com'
+    receivers = ['17051018558@163.com']
+
+    message = MIMEText("%s 当前发生告警,告警名称为 %s ,当前值为 %f" % (host, warning_name, warning_value), 'plain', 'utf-8')
+    message['From'] = "monitor@huaxixianchang.com"
+    message['To'] = "17051018558@163.com"
+
+    subject = "%s 监控告警" % warning_name
+    message['Subject'] = Header(subject, 'utf-8')
+
+    try:
+        smtpObj = smtplib.SMTP()
+        smtpObj.connect(mail_host, 25)  # 25 为 SMTP 端口号
+        smtpObj.login(mail_user, mail_pass)
+        smtpObj.sendmail(sender, receivers, message.as_string())
+        print("邮件发送成功")
+    except smtplib.SMTPException as e:
+        print("Error: 无法发送邮件",e)
