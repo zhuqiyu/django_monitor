@@ -28,7 +28,8 @@ def mymethod2(v1):
 
 @register.simple_tag
 def get_rule_index_name(v1):
-    rule_index_name = (u'无响应',u'CPU使用率', u'内存使用率',u'磁盘Inode',u'磁盘空间',u'磁盘IOPS',u'发送流量',u'连接数',u'接收流量')
+    rule_index_name = (u'无响应',u'CPU使用率', u'内存使用率',u'磁盘Inode',u'磁盘空间',
+                       u'磁盘IOPS',u'发送流量',u'连接数',u'接收流量',u'端口检查')
     result = rule_index_name[v1]
     return result
 
@@ -59,5 +60,14 @@ def get_hosts(v1,v2):
 def get_warning_message(v1):
     if v1 > 0:
         return "<span style='color:red'>异常</span>"
+    elif v1 == -30:
+        return "<span style='color:red'>监控关闭</span>"
     else:
         return "<span style='color:green'>正常</span>"
+
+@register.simple_tag
+def get_rule_switch(v1):
+    if v1:
+        return "checked='checked'"
+    else:
+        return ""

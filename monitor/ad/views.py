@@ -16,6 +16,7 @@ import time,datetime
 import smtplib
 from email.mime.text import MIMEText
 from email.header import Header
+import telnetlib
 
 
 def index(request): 
@@ -32,6 +33,9 @@ def login(request):
     hash.update(raw_input('请输入密码: '))
     passwd = hash.hexdigest()
     '''
+    if request.session.get('username',None):
+        user = request.session.get('name',None)
+        return render(request, 'login2.html', {'user':user})
     if request.method == 'POST':
         user = request.POST.get('username',None)
         pwd = request.POST.get('password',None).encode("utf-8")
@@ -64,6 +68,7 @@ def login(request):
                 else:
                     request.session['username'] = "admin"
                     request.session.set_expiry(6000)
+                request.session["name"] = user
                 return redirect('/ad/assetlist')
                 #return HttpResponse('登录成功')
             else:
@@ -74,6 +79,16 @@ def login(request):
             return render(request,'login.html',{'code_status':result})
     else:
         return render(request,'login.html',{'status':result})
+
+
+
+def ad_exit(request):
+    """
+    :param request: None
+    :return: sign out
+    """
+    request.session["username"] = None
+    return redirect("/ad/login/")
 
 
 def auth(request):
@@ -412,19 +427,45 @@ def server_monitor_warning(request):
             post_triggers_value = request.POST.get("triggers_value", None)
             check_num = triggers_times_choice[int(request.POST["triggers_times"])]
             post_warning = 1 - check_num
+            switch = request.POST.get("switch", 1)
             try:
                 #form.save()
                 RuleIndex.objects.create(name=post_name, triggers_id=post_triggers, time=post_time,
                                          triggers_times=post_triggers_times, triggers_diff=post_triggers_diff,
-                                         triggers_value=post_triggers_value, warning=post_warning)
+                                         triggers_value=post_triggers_value, warning=post_warning, switch=switch)
                 return redirect('/ad/monitor/warning/')
             except Exception as e:
                 logging.error("form.save", e)
         else:
             print("表单无效")
+            print(form.clean())
             result = '无效的用户名/密码'
     return render(request, 'warning.html', {'data': rule_index, 'form': triggers,\
                                             "form2":rule_index_form,'status': result})
+
+
+def server_monitor_warning_update(request):
+    if not request.session.get('username',None):
+        return redirect('/ad/login/')
+    rule_index_id = request.POST.get("id", None)
+    rule_index_switch = request.POST.get("switch", None)
+    print(rule_index_id,rule_index_switch)
+    triggers_times_choice = (1, 3, 5, 10, 15, 30)
+    if all([rule_index_id, rule_index_switch]):
+        try:
+            obj = RuleIndex.objects.get(id=rule_index_id)
+            obj.switch = rule_index_switch
+            print(type(obj.switch),obj.switch)
+            if obj.switch == str(1):
+                obj.warning = 1 - triggers_times_choice[obj.triggers_times]
+            else:
+                obj.warning = -30
+            print(obj.warning)
+            obj.save()
+        except Exception as e:
+            print(e)
+    return redirect("/ad/monitor/warning/")
+
 
 
 def server_monitor_message(request,id):
@@ -432,29 +473,50 @@ def server_monitor_message(request,id):
     #     return HttpResponse("error REMOTE_ADDR")
     try:
         rule_index = RuleIndex.objects.get(id=id)
-        rule_index_name = RuleIndex.objects.get(id=id).name # this is a number
+        rule_index_name = RuleIndex.objects.get(id=id).name  # this is a number
         triggers_id = RuleIndex.objects.get(id=id).triggers_id
         templates_id = Templates.objects.get(triggers=triggers_id).id
         host_group = HostGroup.objects.get(templates=templates_id)
         hosts = Asset.objects.filter(hostgroup=host_group.id)
         triggers_times_choice = (1, 3, 5, 10, 15, 30)
         host_list = []
+        temp_warning_status = 0
+        rule_index_switch = rule_index.switch
         for item in hosts:
             host_list.append(item.hostname)
             hostname = item.hostname
-            print(RuleResult.objects.filter(host=hostname))
             rule_result_query_set = RuleResult.objects.filter(host=hostname)
+            data = json.loads(rule_result_query_set[len(rule_result_query_set) - 1].data)
+            print(type(rule_index_switch),rule_index_switch)
+            if not rule_index_switch:
+                break
             if len(RuleResult.objects.filter(host=hostname)) == 0:
                 continue
+            elif time.mktime(rule_result_query_set[len(rule_result_query_set)-1].time.timetuple()) + 120\
+                    < time.time():
+                continue
             else:
-                data = json.loads(rule_result_query_set[len(rule_result_query_set)-1].data)
                 triggers_times = triggers_times_choice[rule_index.triggers_times]
                 triggers_diff = rule_index.triggers_diff_choice[rule_index.triggers_diff][1]
                 triggers_value = rule_index.triggers_value
                 # print(triggers_times, triggers_diff, triggers_value)
                 # print(type(triggers_times), type(triggers_diff), type(triggers_value))
-                rule_index_name_choice = ("", "cpupercent", "mempercent", "inode",
-                                          "diskpercent", "IOPS", "sentbyte", "connections", "recvbyte")
+                rule_index_name_choice = ("ping", "cpupercent", "mempercent", "inode",
+                                          "diskpercent", "IOPS", "sentbyte",
+                                          "connections", "recvbyte", "LISTEN")
+                if rule_index_name_choice[rule_index_name] == 'ping':
+                    try:
+                        print("ip",item.ip)
+                        tn = telnetlib.Telnet(item.ip, '22', timeout=2)
+                        tn.close()
+                    except Exception as e:
+                        temp_warning_status += 1
+                        if rule_index.warning > 0:
+                            send_mail(hostname,
+                                      host_group.name,
+                                      rule_index_name_choice[rule_index_name],
+                                      -1)
+                    continue
                 print(rule_index_name)
                 print(data[rule_index_name_choice[rule_index_name]])
                 result_data = data[rule_index_name_choice[rule_index_name]]
@@ -463,8 +525,7 @@ def server_monitor_message(request,id):
                 if type(result_data) is float or type(result_data) is int:
                     if eval(str(result_data) + triggers_diff + str(triggers_value)):
                         print("参数%s ,当前值为%f" % (rule_index_name_choice[rule_index_name], result_data))
-                        rule_index.warning += 1
-                        rule_index.save()
+                        temp_warning_status += 1
                         # 邮件报警
                         if rule_index.warning > 0 and\
                                 rule_index.warning % triggers_times_choice[rule_index.triggers_times] == 1:
@@ -482,10 +543,8 @@ def server_monitor_message(request,id):
                         else:
                             print("%s,参数正常" % rule_index_name_choice[rule_index_name])
                         # reset warning value
-                        rule_index.warning = 1 - triggers_times_choice[rule_index.triggers_times]
-                        rule_index.save()
+                        temp_warning_status += 0
                 elif type(result_data) is dict:
-                    temp_warning_status = 0
                     temp_warning_rule_name = rule_index_name_choice[rule_index_name]
                     for k in result_data:
                         if temp_warning_rule_name == "sentbyte" or temp_warning_rule_name == "recvbyte":
@@ -494,7 +553,7 @@ def server_monitor_message(request,id):
                         else:
                             temp_last_value = 0
                         if eval(str(result_data[k]).strip("%") + "-" + str(temp_last_value)
-                                + triggers_diff + str(triggers_value)):
+                                  + triggers_diff + str(triggers_value)):
                             if type(result_data[k]) != str:
                                 # 邮件报警
                                 if rule_index.warning > 0 and \
@@ -509,33 +568,55 @@ def server_monitor_message(request,id):
                             elif type(result_data[k]) == str:
                                 print("参数%s ,当前值为%f" %
                                       (rule_index_name_choice[rule_index_name], int(result_data[k].strip("%"))))
-                            # rule_index.warning += 1
-                            # rule_index.save()
-                            temp_warning_status = 1
+                            temp_warning_status += 1
                             break
                         else:
-                            # reset warning value
-                            # rule_index.warning = 1 - triggers_times_choice[rule_index.triggers_times]
-                            # rule_index.save()
-                            temp_warning_status = 0
+                            temp_warning_status += 0
                             print("参数正常")
-                    if temp_warning_status == 1:
-                        rule_index.warning += 1
                     else:
                         if rule_index.warning > 0:
                             print("本次告警持续时间为: %d 分钟" %
                                   ((rule_index.warning - 1 + triggers_times_choice[rule_index.triggers_times]) * 5.0))
-                        rule_index.warning = 0
-                    rule_index.save()
+                elif type(result_data) is list and rule_index_name_choice[rule_index_name] == "LISTEN":
+                    addr_and_port = "0.0.0.0:" + str(triggers_value)
+                    if addr_and_port not in result_data:
+                        temp_warning_status += 1
+                        if rule_index.warning > 0 and\
+                                rule_index.warning % triggers_times_choice[rule_index.triggers_times] == 1:
+                            send_mail(hostname,
+                                      host_group.name,
+                                      rule_index_name_choice[rule_index_name],
+                                      int(-1))
+                        print(rule_index.warning, host_group.name)
+                        break
+                    else:
+                        print(rule_index.warning - triggers_times_choice[rule_index.triggers_times])
+                        if rule_index.warning > 0:
+                            print("本次告警持续时间为: %d 分钟" %
+                                  ((rule_index.warning - 1 + triggers_times_choice[rule_index.triggers_times]) * 5))
+                        else:
+                            print("%s,参数正常" % rule_index_name_choice[rule_index_name])
+                        # reset warning value
+                        print("")
+                        temp_warning_status += 0
                 else:
                     print("其他")
+        if temp_warning_status > 0:
+            rule_index.warning += 1
+            if rule_index_name == 0:
+                rule_index.warning = 1
+        elif not rule_index_switch:
+            rule_index.warning = -30
+        else:
+            rule_index.warning = 1 - triggers_times_choice[rule_index.triggers_times]
+        rule_index.save()
         return render(request, "message.html", {"host_group": host_group,"host_list":host_list,"data":data})
     except Exception as e:
         logging.error("报警规则id错误",e)
         return HttpResponse("ok")
 
 
-def send_mail(host, host_group,warning_name, warning_value):
+def send_mail(host, host_group, warning_name, warning_value):
     mail_host = "smtp.163.com"  # 设置服务器
     mail_user = "17051018558@163.com"  # 用户名
     mail_pass = "j2H1EsQTJ4qRG89z"  # 口令

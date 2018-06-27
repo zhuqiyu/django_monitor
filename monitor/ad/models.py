@@ -114,6 +114,7 @@ class RuleIndex(models.Model):
         (int(6), u'发送流量'),
         (int(7), u'连接数'),
         (int(8), u'接收流量'),
+        (int(9), u'端口检查'),
     )
     name = models.IntegerField(choices=name_choice)
     triggers = models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='Triggers')
@@ -141,6 +142,7 @@ class RuleIndex(models.Model):
     triggers_diff = models.IntegerField(choices=triggers_diff_choice)
     triggers_value = models.IntegerField()
     warning = models.IntegerField(default=0)
+    switch = models.BooleanField(default=True)
 
 class RuleResult(models.Model):
     time = models.DateTimeField()

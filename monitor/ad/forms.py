@@ -38,7 +38,7 @@ class RuleIndexForm(forms.ModelForm):
     #password = forms.CharField(widget=forms.PasswordInput)
     class Meta:
         model = models.RuleIndex
-        fields = ('name','triggers','time','triggers_times', 'triggers_diff', 'triggers_value')
+        fields = ('name','triggers','time','triggers_times', 'triggers_diff', 'triggers_value', 'switch')
 '''       
 class AssetListForm(forms.ModelForm):
     class Meta:

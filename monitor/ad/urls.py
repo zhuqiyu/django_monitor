@@ -56,11 +56,14 @@ urlpatterns = [
     path(r'userlist/', UserList),
     path(r'auth/', auth),
     path(r'monitor/warning/', server_monitor_warning),
+    path(r'monitor/warningupdate/', server_monitor_warning_update),
     path(r'monitor/hostgroup/', server_monitor_hostgroup),
     path(r'monitor1/', server_monitor1),
     path(r'monitor/templates/', server_monitor_templates),
     path(r'monitor/triggers/', server_monitor_triggers),
     path(r'monitor/message/<int:id>/', server_monitor_message),
     path(r'monitor/<name>/', server_monitor),
+    path(r'exit/', ad_exit),
+    path(r'quit/', ad_exit),
 ]
 

@@ -1,14 +1,76 @@
+<!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-<title></title>
-</head>
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+    <title>华熙现场监控-欢迎登录</title>
+	<!-- <link rel="icon" href="favicon.ico"/> -->
+    <link rel="icon" href="/static/img/favicon.ico"/>
+    <link type="text/css" rel="stylesheet"
+          href="/static/css/login.css"/>
+	<script src="http://cdn.bootcss.com/blueimp-md5/1.1.0/js/md5.js"></script>   
+	<script src="http://cdn.bootcss.com/blueimp-md5/1.1.0/js/md5.min.js"></script>
+	<script>
+	function checkInput() {
+    var password = document.getElementById('password');
+    <!-- var password_md5 = document.getElementById('password_md5'); -->
+
+    // set password
+    password.value =  md5(password.value);
+    return true;
+	}
+	</script>
+	</head>
+
 <body>
-	<form action='/ad/login/' method='POST'>
-		用户名:<input name='username'/></br>
-		密码:<input name='password'/></br>
-		<input type='submit' value='提交'/><span>{{status}}</span>
-	<!--  <img src="/static/img/258.jpg"/>-->
-	</form>
+
+<div><a href='/ad/login/'><img src="/static/img/page_logo.gif" alt="华熙现场官网" /></a></div>
+<div  class="micro-title1"><img src='/static/img/pic6.jpg' alt='二维码' /></div>
+<div class='login-box1'>
+	<a href='http://wks.bloomagelive.com/'><img style="width:660px" src='/static/img/AI.png' alt='aryn'  /></a>
+</div>
+<div class='login-box2'>
+		<a href="/ad/assetlist/">{% csrf_token %}
+		<div><input name="assetlist" type='submit' value="当前用户: {{user}}" style='position:relative;left:30px' class='th-submit3'/></div>
+		</a>
+		<a href="/ad/exit/">{% csrf_token %}
+		<div><input name="signout" type="submit" value="登出" style='position:relative;left:30px;margin-top:15px' class='th-submit3'/></div>
+		</a>
+</div>
+
+<div class='bottom-sty' style="position:fixed;left:40%">
+
+	<h5>©华熙现场科技有限公司    <span style="color:black">版权所有</span> <a href="http://www.miitbeian.gov.cn"><span style="color:black">京ICP备16047864号-1</span></h5></a>
+
+</div>
+
+
+
 </body>
+
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
