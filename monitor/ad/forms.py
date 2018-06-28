@@ -1,9 +1,8 @@
 #!/usr/bin/env python
-#coding=utf-8
+# coding=utf-8
 
 from django import forms
 from . import models
-import hashlib
 
 '''
 class RegisterForm(forms.Form):
@@ -14,20 +13,23 @@ class RegisterForm(forms.Form):
     typeId = forms.ChoiceField()
 '''
 
+
 class RegisterForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput)
+
     class Meta:
         model = models.UserInfo
-        fields = ('name','password','email','memo','user_type')
+        fields = ('name', 'password', 'email', 'memo', 'user_type')
         widgets = {
-            'password': forms.PasswordInput(attrs={'type':'password'})
+            'password': forms.PasswordInput(attrs={'type': 'password'})
         }
+
 
 class AssetListForm(forms.Form):
     usergroup_choice = (
-        (int(1),u'运维组'),
-        (int(2),u'开发组'),
-        (int(3),u'DBA组'),
+        (int(1), u'运维组'),
+        (int(2), u'开发组'),
+        (int(3), u'DBA组'),
     )
     hostname = forms.CharField(max_length=30)
     ip = forms.GenericIPAddressField()
@@ -35,11 +37,14 @@ class AssetListForm(forms.Form):
 
 
 class RuleIndexForm(forms.ModelForm):
-    #password = forms.CharField(widget=forms.PasswordInput)
+    # password = forms.CharField(widget=forms.PasswordInput)
     class Meta:
         model = models.RuleIndex
-        fields = ('name','triggers','time','triggers_times', 'triggers_diff', 'triggers_value', 'switch')
-'''       
+        fields = ('name', 'triggers', 'time', 'triggers_times',
+                  'triggers_diff', 'triggers_value', 'switch')
+
+
+'''
 class AssetListForm(forms.ModelForm):
     class Meta:
         usergroup_choice = (
@@ -55,19 +60,19 @@ class AssetListForm(forms.ModelForm):
         widgets = {
             'user_group':forms.widgets.Select(choices=usergroup_choice),
         }
-        #help_texts = {'user_group':(u'运维组/开发组/DBA组'),}     
+        #help_texts = {'user_group':(u'运维组/开发组/DBA组'),}
 '''
-                
-        
-'''
-class RegisterForm2(forms.Form):
-    user_type_choice = (
-        (1, u'普通管理员'),
-        (2, u'超级管理员'),
-        )
-    user_type = forms.IntegerField(widget=forms.widgets.Select(choices=user_type_choice,attrs={'class': "form-control"}))
 
-'''
+
+# class RegisterForm2(forms.Form):
+#     user_type_choice = (
+#         (1, u'普通管理员'),
+#         (2, u'超级管理员'),
+#         )
+#     user_type = forms.IntegerField(widget=forms.widgets.Select(choices=user_type_choice,
+#                                                                attrs={'class': "form-control"}))
+
+
 '''
 class RegisterForm2(forms.ModelForm):
     class Meta:
@@ -77,5 +82,3 @@ class RegisterForm2(forms.ModelForm):
 '''
         fields = ('name','password','email','memo','typeId')
 '''
-    
-    

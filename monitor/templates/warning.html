@@ -23,7 +23,7 @@
 			<form action='/ad/monitor/warningupdate/' method='POST'>{% csrf_token %}
 			<table style='position:relative;left:8%;top:10px;bottom:50px' border='1'>
 			<tr name="RuleIndextable" >
-				<td ><input name="id" value="{{item.id}}" readonly="readonly" style="width:31px"></input></td>
+				<td style="width:35px"><input name="id" value="{{item.id}}" readonly="readonly" style="width:35px;border:0px"></input></td>
 				<td style="width:100px">{% get_rule_index_name item.name%}</td>
 				<td style="width:100px">{{item.triggers.name}}</td>
 				<td style="width:100px">{{item.time}}分钟</td>

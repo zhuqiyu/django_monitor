@@ -1,26 +1,24 @@
-##-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.shortcuts import render,render_to_response,redirect
-from .models import *
+from django.shortcuts import render, redirect
+from .models import (UserInfo, Salt, UserGroup, Asset, HostGroup,
+                     Templates, Triggers, RuleIndex, RuleResult)
 
 # Create your views here.
 
-from .forms import *
+from .forms import RegisterForm, AssetListForm, RuleIndexForm
 from django.http.response import HttpResponse
 from .Authcode import authCode
 import logging
 import json
 import os
-import time,datetime
+import time
 import smtplib
 from email.mime.text import MIMEText
 from email.header import Header
 import telnetlib
-
-
-def index(request): 
-    return HttpResponse('ad/index')
+import hashlib
 
 
 def login(request):
@@ -33,36 +31,36 @@ def login(request):
     hash.update(raw_input('请输入密码: '))
     passwd = hash.hexdigest()
     '''
-    if request.session.get('username',None):
-        user = request.session.get('name',None)
-        return render(request, 'login2.html', {'user':user})
+    if request.session.get('username', None):
+        user = request.session.get('name', None)
+        return render(request, 'login2.html', {'user': user})
     if request.method == 'POST':
-        user = request.POST.get('username',None)
-        pwd = request.POST.get('password',None).encode("utf-8")
-        #pwd_md5 = request.POST.get('', None)
+        user = request.POST.get('username', None)
+        pwd = request.POST.get('password', None).encode("utf-8")
+        # pwd_md5 = request.POST.get('', None)
         acode = request.POST.get('auth_code_client', None)
         is_empty = all([user, pwd, acode, request.session["verify_code"]])
-        print(user, pwd, acode, request.session["verify_code"] )
+        print(user, pwd, acode, request.session["verify_code"])
         print(request)
 
-        if is_empty == False:
+        if is_empty is False:
             result = '用户名/密码不能为空'
-            return render(request,'login.html')
+            return render(request, 'login.html', result)
         elif acode == request.session["verify_code"]:
             salt = UserInfo.objects.get(name=user).salt.value
-            #salt = Salt.objects.filter(id=salt_id)[0].value
-            print("salt_id",salt)
-            print(type(salt),salt)
+            # salt = Salt.objects.filter(id=salt_id)[0].value
+            print("salt_id", salt)
+            print(type(salt), salt)
             if len(pwd) != 32:
-              pwd = hashlib.md5(pwd).hexdigest().encode("utf-8")
-            print(type(pwd),pwd)
+                pwd = hashlib.md5(pwd).hexdigest().encode("utf-8")
+            print(type(pwd), pwd)
             salt_password = salt + pwd
             print(salt_password)
             pwd = hashlib.md5(salt_password).hexdigest()
             print(pwd)
-            if UserInfo.objects.filter(name=user,password=pwd).count() >= 1:
-                adminlevel = UserInfo.objects.get(name=user).user_type
-                if adminlevel == 1:
+            if UserInfo.objects.filter(name=user, password=pwd).count() >= 1:
+                admin_level = UserInfo.objects.get(name=user).user_type
+                if admin_level == 1:
                     request.session['username'] = "superadmin"
                     request.session.set_expiry(6000)
                 else:
@@ -70,21 +68,20 @@ def login(request):
                     request.session.set_expiry(6000)
                 request.session["name"] = user
                 return redirect('/ad/assetlist')
-                #return HttpResponse('登录成功')
+                # return HttpResponse('登录成功')
             else:
                 result = '用户名/密码错误'
-                return render(request,'login.html',{'status':result})
+                return render(request, 'login.html', {'status': result})
         else:
             result = '验证码错误'
-            return render(request,'login.html',{'code_status':result})
+            return render(request, 'login.html', {'code_status': result})
     else:
-        return render(request,'login.html',{'status':result})
-
+        return render(request, 'login.html', {'status': result})
 
 
 def ad_exit(request):
+    # 登出
     """
-    :param request: None
     :return: sign out
     """
     request.session["username"] = None
@@ -92,7 +89,10 @@ def ad_exit(request):
 
 
 def auth(request):
-    """ 验证码函数 """
+    """ 验证码函数 ,authCode类来自Authcode.py
+    @:return
+        auth_code_img, 二进制图片
+    """
     auth_code = authCode()
     auth_code_img = auth_code.gene_code()
     auth_code_text = auth_code.text
@@ -107,71 +107,62 @@ def Register(request):
     registerForm = RegisterForm()
     if request.method == 'POST':
         form = RegisterForm(request.POST)
-        #print form
+        # print form
         if form.is_valid():
-            #data = form.clean()
-            #django.forms.boundfield.BoundField
+            # data = form.clean()
             name = request.POST.get("name", None)
             password = request.POST.get("password", None).encode("utf-8")
             email = request.POST.get("email", None)
             memo = request.POST.get("memo", None)
             user_type = request.POST.get("user_type", None)
-            print(name,password,email,memo,user_type)
+            print(name, password, email, memo, user_type)
             if UserInfo.objects.filter(name=name).count():
                 result = '用户名已存在'
-                return render(request,'register.html',{'form':registerForm,'status':result})
+                return render(request, 'register.html',
+                              {'form': registerForm, 'status': result})
             else:
                 try:
-                    salt = os.urandom(12)   # salt
+                    # 加盐
+                    salt = os.urandom(12)
                     if len(password) != 32:
                         password = hashlib.md5(password).hexdigest().encode("utf-8")
-                    salt_password = salt + password  # add salt
+                    salt_password = salt + password
                     print(salt_password)
                     password = hashlib.md5(salt_password).hexdigest()
                     salt_id = Salt.objects.create(value=salt).id
-                    UserInfo.objects.create(user_type=user_type,name=name,password=password,\
-                                            email=email,memo=memo,salt_id=salt_id)
-                    #form.save()
+                    UserInfo.objects.create(user_type=user_type, name=name, password=password,
+                                            email=email, memo=memo, salt_id=salt_id)
+                    # form.save()
                     return redirect('/ad/login/')
                 except Exception as e:
-                    logging.error("form.save()",e)
+                    logging.error("form.save()", e)
                     return render(request, 'register.html', {'form': registerForm, 'status': result})
-            #form.save()
+            # form.save()
         else:
-            #print form.errors.as_json()
+            # print form.errors.as_json()
             result = '无效的用户名/密码'
-    return render(request,'register.html',{'form':registerForm,'status':result})
+    return render(request, 'register.html',
+                  {'form': registerForm, 'status': result})
 
-
-def Add(request,name):
-    Asset.objects.create(hostname=name)
-    print(name)
-    return HttpResponse('ok')
-
-def Delete(request,id):
-    
-    Asset.objects.get(id=id).delete()
-    print(id)
-    return HttpResponse('ok')
 
 def AssetUpdate(request):
     """
     资产配置修改
-    :param request:user login
+    :request: user login
     :return: httpresponse('ok')
     """
-    if not request.session.get('username',0):
+    if not request.session.get('username', 0):
         return redirect('/ad/login/')
     if request.method == 'POST':
-        #print request.POST.get('data')
-        Hostname= request.POST.get('hostname',None)
-        Ip = request.POST.get('ip',None)
-        Id = request.POST.get('id',None)
-        #is_empty = all([Hostname,Ip])
-        #print Id,Ip,Hostname
+        # print request.POST.get('data')
+        Hostname = request.POST.get('hostname', None)
+        Ip = request.POST.get('ip', None)
+        Id = request.POST.get('id', None)
+        # is_empty = all([Hostname,Ip])
+        # print Id,Ip,Hostname
         if Hostname and Ip:
-            print('Hostname',Hostname)
-            print('ip',Ip)
+            print('Hostname', Hostname)
+            print('ip', Ip)
             obj = Asset.objects.get(id=Id)
             obj.hostname = Hostname
             obj.ip = Ip
@@ -184,7 +175,7 @@ def AssetUpdate(request):
             return HttpResponse('ok')
         else:
             return HttpResponse('ip或主机名不能为空')
-        return render(request,'assetlist.html')
+        return render(request, 'assetlist.html')
 #         elif Ip:
 #             print 'Ip',Ip
 #             obj = Asset.objects.get(id=Id)
@@ -193,32 +184,34 @@ def AssetUpdate(request):
 #             return HttpResponse('ok')
     else:
         return HttpResponse('404')
+
+
 def UserUpdate(request):
     """
     用户信息升级
     :param request: user login
     :return:200
     """
-    result = ''
-    if not request.session.get('username',0):
+    if not request.session.get('username', 0):
         return redirect('/ad/login/')
     if request.method == 'POST':
-        #print request.POST.get('data')
-        name= request.POST.get('Name',None)
-        email = request.POST.get('Email',None)
+        # print request.POST.get('data')
+        name = request.POST.get('Name', None)
+        email = request.POST.get('Email', None)
         if '@' not in email:
             return HttpResponse('邮箱信息错误')
             exit(0)
-        id = request.POST.get('Id',None)
-        memo = request.POST.get('Memo',None)
-        #is_empty = all([Hostname,Ip])
-        #print name,email,id,memo
-        is_empty = all([name,email,id,memo])
+        u_id = request.POST.get('Id', None)
+        memo = request.POST.get('Memo', None)
+        # is_empty = all([Hostname,Ip])
+        # print name,email,id,memo
+        is_empty = all([name, email, u_id, memo])
         if is_empty:
-            print('name',name)
-            print('email',email)
+            print('name', name)
+            print('email', email)
+            # noinspection PyBroadException
             try:
-                obj = UserInfo.objects.get(id=id)
+                obj = UserInfo.objects.get(id=u_id)
                 obj.email = email
                 obj.name = name
                 obj.memo = memo
@@ -229,27 +222,21 @@ def UserUpdate(request):
             return HttpResponse(200)
         else:
             return HttpResponse(0)
-        return render(request,'userlist.html')
     else:
         return HttpResponse('404')
-def UpdatetoMany(request,id,hostname):
-    
-    Asset.objects.filter(id__gt=id).update(hostname=hostname)
-
-    return HttpResponse('ok')
-def Get(request,hostname):
-    
-    obj = Asset.objects.filter(hostname__contains=hostname)
-    #alldate = Asset.objects.all()
-    #alldate = Asset.objects.all().order_by('id')
-    #alldate = Asset.objects.all().order_by('-id')
-    #onedate =  Asset.objects.all().values('id') #只查id列
-    print(obj.host)
-    return HttpResponse('ok')
 
 
 def AssetList(request):
-    if not request.session.get('username',None):
+    """
+    资产列表,
+    :param request: 用户登录
+    @return:
+        result: 状态
+        asset_list: asset表的objects数据
+        assetlistform: assetlistform 表单验证
+        host_group: 资产对应的的用户组
+    """
+    if not request.session.get('username', None):
         return redirect('/ad/login/')
     asset_list = Asset.objects.all()
     result = ''
@@ -271,33 +258,51 @@ def AssetList(request):
             print('ip', Ip)
             try:
                 Asset.objects.create(hostname=Hostname, ip=Ip, user_group=groupinstance)
-                return render(request, 'assetlist.html', {'data': asset_list, 'form': assetlistform,\
-                                                          'host_group':host_group, 'status': result})
+                return render(request, 'assetlist.html',
+                              {'data': asset_list, 'form': assetlistform,
+                               'host_group': host_group, 'status': result})
             except Exception as e:
                 logging.error(e)
                 return redirect("/ad/assetlist/")
         else:
             # return HttpResponse('ip或主机名错误')
-            return render(request, 'assetlist.html', {'data': asset_list, 'form': assetlistform,\
-                                                      'host_group':host_group, 'status': result})
+            return render(request, 'assetlist.html',
+                          {'data': asset_list, 'form': assetlistform,
+                           'host_group': host_group, 'status': result})
     else:
-        return render(request,'assetlist.html',{'data':asset_list,'form':assetlistform,\
-                                                'host_group':host_group,'status':result})
+        return render(request, 'assetlist.html',
+                      {'data': asset_list, 'form': assetlistform,
+                       'host_group': host_group, 'status': result})
 
 
 def UserList(request):
-    if not request.session.get('username',None):
+    """
+
+    :param request: 用户登录
+    @return:
+        user_list_name: table 标题
+        user_list: 用户数据
+    """
+    if not request.session.get('username', None):
         return redirect('/ad/login/')
     elif request.session['username'] != "superadmin":
         return redirect('/ad/assetlist/')
     user_list = UserInfo.objects.all()
-    
-    user_list_name = ('name','email','memo','typeId','修改时间',u'创建时间')
-    return render(request,'userlist.html',{'data':user_list,'list':user_list_name})
+    user_list_name = ('name', 'email', 'memo', 'typeId', '修改时间', u'创建时间')
+    return render(request, 'userlist.html', {'data': user_list, 'list': user_list_name})
 
 
-def server_monitor(request,name):
-    if not request.session.get('username',None):
+def server_monitor(request, name):
+    """
+    :前置条件: 用户登录
+    :param request: 用户请求
+    :param name: asset hostname
+    :return:
+        正确返回: 主机对应最新一条记录的list 格式，方便前台进行Echart处理
+        错误返回: 无监控数据
+        异常返回: 跳转到/ad/monitor/hostgroup/
+    """
+    if not request.session.get('username', None):
         return redirect('/ad/login/')
     try:
         server_data = RuleResult.objects.filter(host=name)
@@ -313,7 +318,8 @@ def server_monitor(request,name):
             data1["sentbyte"] = dict()
             data1["recvbyte"] = dict()
             data1["connections"] = dict()
-            data1_index = ("load","inode","diskpercent","IOPS","sentbyte","recvbyte","connections")
+            data1_index = ("load", "inode", "diskpercent",
+                           "IOPS", "sentbyte", "recvbyte", "connections")
             # data1['inode']['/'] = []
             # data1['inode']['/boot'] = []
             # data1['inode']['/data'] = []
@@ -323,7 +329,7 @@ def server_monitor(request,name):
                 data1["cpu"].append(server_data[i].data["cpupercent"])
                 data1["memcache"].append(server_data[i].data["mempercent"])
                 for item in data1_index:
-                    for k,v in server_data[i].data[item].items():
+                    for k, v in server_data[i].data[item].items():
                         if item == "inode":
                             v = int(v.strip("%"))
                         if type(data1[item].get(k, None)) != list:
@@ -337,8 +343,19 @@ def server_monitor(request,name):
         return redirect("/ad/monitor/hostgroup/")
 
 
-def server_monitor1(request):
-    if not request.session.get('username',None):
+def server_monitor_host(request):
+    """
+    从Asset表(主机表)中取出所有主机,
+    去RuleResult表(监控结果表)取出每个主机对应的最新数据.
+    :param request: 用户请求
+    :return:
+        正常返回:
+            data1:
+                host: 主机名; ip: 主机ip;cpu: cpu;mem: 内存;diskpercent: 磁盘百分比
+        异常返回: 无监控数据; 跳转到 hostgroup
+    """
+    # 用户必须登录
+    if not request.session.get('username', None):
         return redirect('/ad/login/')
     try:
         server_data = []
@@ -365,7 +382,7 @@ def server_monitor1(request):
                         item_data['disk'] = temp_disk_percent
                         print(temp_disk_percent)
                 data1.append(item_data)
-            return render(request, "monitor1.html", {"data":data1})
+            return render(request, "monitor_host.html", {"data": data1})
         return HttpResponse("无监控数据")
     except Exception as e:
         logging.error("RuleResult", e)
@@ -373,7 +390,8 @@ def server_monitor1(request):
 
 
 def server_monitor_hostgroup(request):
-    if not request.session.get('username',None):
+    """功能未开发"""
+    if not request.session.get('username', None):
         return redirect('/ad/login/')
     result = ''
     host_group = HostGroup.objects.all()
@@ -385,11 +403,13 @@ def server_monitor_hostgroup(request):
         for item in hosts:
             host_list[i.id].append(item.hostname)
     print(host_list)
-    return render(request, 'hostgroup.html', {'data': host_group, "host_list": host_list, 'status': result})
+    return render(request, 'hostgroup.html',
+                  {'data': host_group, "host_list": host_list, 'status': result})
 
 
 def server_monitor_templates(request):
-    if not request.session.get('username',None):
+    """功能未开发"""
+    if not request.session.get('username', None):
         return redirect('/ad/login/')
     result = ''
     templetes = Templates.objects.all()
@@ -397,7 +417,8 @@ def server_monitor_templates(request):
 
 
 def server_monitor_triggers(request):
-    if not request.session.get('username',None):
+    """功能未开发"""
+    if not request.session.get('username', None):
         return redirect('/ad/login/')
     result = ''
     triggers = Triggers.objects.all()
@@ -405,7 +426,12 @@ def server_monitor_triggers(request):
 
 
 def server_monitor_warning(request):
-    if not request.session.get('username',None):
+    """
+    告警显示, 添加新的告警规则
+    :param request: 用户请求
+    :return:
+    """
+    if not request.session.get('username', None):
         return redirect('/ad/login/')
     rule_index = RuleIndex.objects.all()
     result = ''
@@ -429,7 +455,7 @@ def server_monitor_warning(request):
             post_warning = 1 - check_num
             switch = request.POST.get("switch", 1)
             try:
-                #form.save()
+                # form.save()
                 RuleIndex.objects.create(name=post_name, triggers_id=post_triggers, time=post_time,
                                          triggers_times=post_triggers_times, triggers_diff=post_triggers_diff,
                                          triggers_value=post_triggers_value, warning=post_warning, switch=switch)
@@ -440,22 +466,23 @@ def server_monitor_warning(request):
             print("表单无效")
             print(form.clean())
             result = '无效的用户名/密码'
-    return render(request, 'warning.html', {'data': rule_index, 'form': triggers,\
-                                            "form2":rule_index_form,'status': result})
+    return render(request, 'warning.html', {'data': rule_index, 'form': triggers,
+                                            "form2": rule_index_form, 'status': result})
 
 
 def server_monitor_warning_update(request):
-    if not request.session.get('username',None):
+    """启用/停止 告警规则"""
+    if not request.session.get('username', None):
         return redirect('/ad/login/')
     rule_index_id = request.POST.get("id", None)
     rule_index_switch = request.POST.get("switch", None)
-    print(rule_index_id,rule_index_switch)
+    print(rule_index_id, rule_index_switch)
     triggers_times_choice = (1, 3, 5, 10, 15, 30)
     if all([rule_index_id, rule_index_switch]):
         try:
             obj = RuleIndex.objects.get(id=rule_index_id)
             obj.switch = rule_index_switch
-            print(type(obj.switch),obj.switch)
+            print(type(obj.switch), obj.switch)
             if obj.switch == str(1):
                 obj.warning = 1 - triggers_times_choice[obj.triggers_times]
             else:
@@ -467,14 +494,13 @@ def server_monitor_warning_update(request):
     return redirect("/ad/monitor/warning/")
 
 
-
-def server_monitor_message(request,id):
-    print(request.META.get("REMOTE_ADDR",None))
-    #     return HttpResponse("error REMOTE_ADDR")
+def server_monitor_message(request, u_id):
+    if request.META.get("REMOTE_ADDR", None) != "192.168.115.21":
+        return HttpResponse(status=444)
     try:
-        rule_index = RuleIndex.objects.get(id=id)
-        rule_index_name = RuleIndex.objects.get(id=id).name  # this is a number
-        triggers_id = RuleIndex.objects.get(id=id).triggers_id
+        rule_index = RuleIndex.objects.get(id=u_id)
+        rule_index_name = RuleIndex.objects.get(id=u_id).name  # this is a number
+        triggers_id = RuleIndex.objects.get(id=u_id).triggers_id
         templates_id = Templates.objects.get(triggers=triggers_id).id
         host_group = HostGroup.objects.get(templates=templates_id)
         hosts = Asset.objects.filter(hostgroup=host_group.id)
@@ -487,7 +513,7 @@ def server_monitor_message(request,id):
             hostname = item.hostname
             rule_result_query_set = RuleResult.objects.filter(host=hostname)
             data = json.loads(rule_result_query_set[len(rule_result_query_set) - 1].data)
-            print(type(rule_index_switch),rule_index_switch)
+            print(type(rule_index_switch), rule_index_switch)
             if not rule_index_switch:
                 break
             if len(RuleResult.objects.filter(host=hostname)) == 0:
@@ -505,11 +531,12 @@ def server_monitor_message(request,id):
                                           "diskpercent", "IOPS", "sentbyte",
                                           "connections", "recvbyte", "LISTEN")
                 if rule_index_name_choice[rule_index_name] == 'ping':
+                    # noinspection PyBroadException
                     try:
-                        print("ip",item.ip)
+                        print("ip", item.ip)
                         tn = telnetlib.Telnet(item.ip, '22', timeout=2)
                         tn.close()
-                    except Exception as e:
+                    except Exception:
                         temp_warning_status += 1
                         if rule_index.warning > 0:
                             send_mail(hostname,
@@ -528,18 +555,18 @@ def server_monitor_message(request,id):
                         temp_warning_status += 1
                         # 邮件报警
                         if rule_index.warning > 0 and\
-                                rule_index.warning % triggers_times_choice[rule_index.triggers_times] == 1:
+                                rule_index.warning % triggers_times == 1:
                             send_mail(hostname,
                                       host_group.name,
                                       rule_index_name_choice[rule_index_name],
                                       result_data)
-                        print(rule_index.warning,host_group.name)
+                        print(rule_index.warning, host_group.name)
                         break
                     else:
-                        print(rule_index.warning - triggers_times_choice[rule_index.triggers_times])
+                        print(rule_index.warning - triggers_times)
                         if rule_index.warning > 0:
-                            print("本次告警持续时间为: %d 分钟" % \
-                                  ((rule_index.warning - 1 + triggers_times_choice[rule_index.triggers_times]) * 5))
+                            print("本次告警持续时间为: %d 分钟" %
+                                  ((rule_index.warning - 1 + triggers_times) * 5))
                         else:
                             print("%s,参数正常" % rule_index_name_choice[rule_index_name])
                         # reset warning value
@@ -552,12 +579,12 @@ def server_monitor_message(request,id):
                             temp_last_value = temp_last_data[temp_warning_rule_name][k]
                         else:
                             temp_last_value = 0
-                        if eval(str(result_data[k]).strip("%") + "-" + str(temp_last_value)
-                                  + triggers_diff + str(triggers_value)):
+                        if eval(str(result_data[k]).strip("%") + "-" + str(temp_last_value) +
+                                triggers_diff + str(triggers_value)):
                             if type(result_data[k]) != str:
                                 # 邮件报警
                                 if rule_index.warning > 0 and \
-                                        rule_index.warning % triggers_times_choice[rule_index.triggers_times] == 1:
+                                        rule_index.warning % triggers_times == 1:
                                     send_mail(hostname,
                                               host_group.name,
                                               rule_index_name_choice[rule_index_name],
@@ -576,13 +603,13 @@ def server_monitor_message(request,id):
                     else:
                         if rule_index.warning > 0:
                             print("本次告警持续时间为: %d 分钟" %
-                                  ((rule_index.warning - 1 + triggers_times_choice[rule_index.triggers_times]) * 5.0))
+                                  ((rule_index.warning - 1 + triggers_times) * 5.0))
                 elif type(result_data) is list and rule_index_name_choice[rule_index_name] == "LISTEN":
                     addr_and_port = "0.0.0.0:" + str(triggers_value)
                     if addr_and_port not in result_data:
                         temp_warning_status += 1
                         if rule_index.warning > 0 and\
-                                rule_index.warning % triggers_times_choice[rule_index.triggers_times] == 1:
+                                rule_index.warning % triggers_times == 1:
                             send_mail(hostname,
                                       host_group.name,
                                       rule_index_name_choice[rule_index_name],
@@ -590,10 +617,10 @@ def server_monitor_message(request,id):
                         print(rule_index.warning, host_group.name)
                         break
                     else:
-                        print(rule_index.warning - triggers_times_choice[rule_index.triggers_times])
+                        print(rule_index.warning - triggers_times)
                         if rule_index.warning > 0:
                             print("本次告警持续时间为: %d 分钟" %
-                                  ((rule_index.warning - 1 + triggers_times_choice[rule_index.triggers_times]) * 5))
+                                  ((rule_index.warning - 1 + triggers_times) * 5))
                         else:
                             print("%s,参数正常" % rule_index_name_choice[rule_index_name])
                         # reset warning value
@@ -608,18 +635,22 @@ def server_monitor_message(request,id):
         elif not rule_index_switch:
             rule_index.warning = -30
         else:
-            rule_index.warning = 1 - triggers_times_choice[rule_index.triggers_times]
+            rule_index.warning = 1 - triggers_times
         rule_index.save()
-        return render(request, "message.html", {"host_group": host_group,"host_list":host_list,"data":data})
+        return render(request, "message.html",
+                      {"host_group": host_group, "host_list": host_list, "data": data})
     except Exception as e:
-        logging.error("报警规则id错误",e)
+        logging.error("报警规则id错误", e)
         return HttpResponse("ok")
 
 
 def send_mail(host, host_group, warning_name, warning_value):
-    mail_host = "smtp.163.com"  # 设置服务器
-    mail_user = "17051018558@163.com"  # 用户名
-    mail_pass = "j2H1EsQTJ4qRG89z"  # 口令
+    # 设置服务器
+    mail_host = "smtp.163.com"
+    # 用户名
+    mail_user = "17051018558@163.com"
+    # 口令
+    mail_pass = "j2H1EsQTJ4qRG89z"
 
     sender = '17051018558@163.com'
     receivers = ['17051018558@163.com']
@@ -634,9 +665,10 @@ def send_mail(host, host_group, warning_name, warning_value):
 
     try:
         smtpObj = smtplib.SMTP()
-        smtpObj.connect(mail_host, 25)  # 25 为 SMTP 端口号
+        # 25 为 SMTP 端口号
+        smtpObj.connect(mail_host, 25)
         smtpObj.login(mail_user, mail_pass)
         smtpObj.sendmail(sender, receivers, message.as_string())
         print("邮件发送成功")
     except smtplib.SMTPException as e:
-        print("Error: 无法发送邮件",e)
+        print("Error: 无法发送邮件", e)

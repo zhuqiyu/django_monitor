@@ -3,31 +3,27 @@ from __future__ import unicode_literals
 
 from django.db import models
 import django
-import hashlib
 # Create your models here.
-
-
-#class UserType(models.Model):
 
 
 class UserInfo(models.Model):
     user_type_choice = (
-    (int(0), u'普通管理员'),
-    (int(1), u'超级管理员'),
+        (int(0), u'普通管理员'),
+        (int(1), u'超级管理员'),
     )
     user_type = models.IntegerField(choices=user_type_choice)
-    name = models.CharField(max_length=30,unique=True)
+    name = models.CharField(max_length=30, unique=True)
     password = models.CharField(max_length=256)
-    salt = models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='Salt',null=True)
+    salt = models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='Salt', null=True)
     # hash = hashlib.md5()
     # hash.update(password)
     # password = hash.hexdigest()
     email = models.EmailField()
     memo = models.TextField(null=True)
-    #typeId = models.ForeignKey('UserType')
+    # typeId = models.ForeignKey('UserType')
     atime = models.DateTimeField(auto_now=True)
-    ctime= models.DateTimeField(auto_now_add=True)
-    
+    ctime = models.DateTimeField(auto_now_add=True)
+
     def __unicode__(self):
         return self.name
 
@@ -36,20 +32,10 @@ class Salt(models.Model):
     value = models.BinaryField(max_length=256)
 
 
-
 class UserGroup(models.Model):
     Name = models.CharField(max_length=50)
 
 
-'''    
-class User(models.Model):
-    Name = models.CharField(max_length=50)
-    Email = models.EmailField(max_length=30)
-    group_relation = models.ManyToManyField('UserGroup')
-
-'''
-
-  
 class Asset(models.Model):
     hostname = models.CharField(max_length=30, unique=True)
     ip = models.GenericIPAddressField(unique=True)
@@ -64,17 +50,18 @@ class Asset(models.Model):
 
 
 class HostGroup(models.Model):
-    name = models.CharField(max_length=32,unique=True)
-    #templates = models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='Templates')
+    name = models.CharField(max_length=32, unique=True)
+    # templates = models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='Templates')
     templates = models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='Templates')
-    memo = models.TextField(u"备注",blank=True,null=True)
+    memo = models.TextField(u"备注", blank=True, null=True)
+
     def __unicode__(self):
-      return self.name
+        return self.name
 
 
 class Templates(models.Model):
-    name = models.CharField(max_length=32,unique=True)
-    #triggers = models.ManyToManyField('Triggers', verbose_name=u"触发器列表", blank=True)
+    name = models.CharField(max_length=32, unique=True)
+    # triggers = models.ManyToManyField('Triggers', verbose_name=u"触发器列表", blank=True)
     # triggers_choice = (
     # (int(0), u'普通管理员'),
     # (int(1), u'超级管理员'),
@@ -87,9 +74,10 @@ class Triggers(models.Model):
     name = models.CharField(max_length=32, unique=True)
     # triggers_index = models.IntegerField()
     # rule = models.IntegerField()
-    memo = models.TextField(u"备注",blank=True,null=True)
+    memo = models.TextField(u"备注", blank=True, null=True)
+
     def __unicode__(self):
-      return self.name
+        return self.name
 
 
 # class TriggersIndex(models.Model):
@@ -144,8 +132,8 @@ class RuleIndex(models.Model):
     warning = models.IntegerField(default=0)
     switch = models.BooleanField(default=True)
 
+
 class RuleResult(models.Model):
     time = models.DateTimeField()
     data = models.TextField()
     host = models.CharField(max_length=30)
-
