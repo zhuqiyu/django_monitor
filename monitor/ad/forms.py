@@ -44,6 +44,13 @@ class RuleIndexForm(forms.ModelForm):
                   'triggers_diff', 'triggers_value', 'switch')
 
 
+class TemplatesForm(forms.ModelForm):
+    # password = forms.CharField(widget=forms.PasswordInput)
+    class Meta:
+        model = models.Templates
+        fields = ('name', 'triggers', 'memo')
+
+
 '''
 class AssetListForm(forms.ModelForm):
     class Meta:

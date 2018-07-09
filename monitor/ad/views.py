@@ -7,7 +7,7 @@ from .models import (UserInfo, Salt, UserGroup, Asset, HostGroup,
 
 # Create your views here.
 
-from .forms import RegisterForm, AssetListForm, RuleIndexForm
+from .forms import RegisterForm, AssetListForm, RuleIndexForm, TemplatesForm
 from django.http.response import HttpResponse
 from .Authcode import authCode
 import logging
@@ -395,16 +395,23 @@ def server_monitor_hostgroup(request):
         return redirect('/ad/login/')
     result = ''
     host_group = HostGroup.objects.all()
+
     # print(host_group[0].id)
     host_list = dict()
-    for i in host_group:
-        hosts = Asset.objects.filter(hostgroup=i.id)
-        host_list[i.id] = []
-        for item in hosts:
-            host_list[i.id].append(item.hostname)
-    print(host_list)
-    return render(request, 'hostgroup.html',
-                  {'data': host_group, "host_list": host_list, 'status': result})
+    # 7/2 start
+    # templates_form = TemplatesForm()
+    if request.method == 'POST':
+        pass
+    else:
+        # 7/2 end
+        for i in host_group:
+            hosts = Asset.objects.filter(hostgroup=i.id)
+            host_list[i.id] = []
+            for item in hosts:
+                host_list[i.id].append(item.hostname)
+        print(host_list)
+        return render(request, 'hostgroup.html',
+                      {'data': host_group, "host_list": host_list, 'status': result})
 
 
 def server_monitor_templates(request):
@@ -413,7 +420,25 @@ def server_monitor_templates(request):
         return redirect('/ad/login/')
     result = ''
     templetes = Templates.objects.all()
-    return render(request, 'templetes.html', {'data': templetes,  'status': result})
+    # templates_form = TemplatesForm()
+    triggers_form = Triggers.objects.all()
+    # 7/2 start
+    if request.method == 'POST':
+        templates_name = request.POST.get("templates_name", None)
+        templates_triggers = request.POST.get("templates_triggers", None)
+        templates_memo = request.POST.get("templates_memo", None)
+        print("创建模板", templates_name, templates_triggers, templates_memo)
+        try:
+            Templates.objects.create(name=templates_name,
+                                     triggers_id=templates_triggers, memo=templates_memo)
+        except Exception as err:
+            print("模板创建失败", err)
+        return redirect("/ad/monitor/templates/")
+    else:
+        # 7/2 end
+        return render(request, 'templetes.html',
+                      {'data': templetes,'status': result,
+                       "form2": triggers_form})
 
 
 def server_monitor_triggers(request):
@@ -422,7 +447,20 @@ def server_monitor_triggers(request):
         return redirect('/ad/login/')
     result = ''
     triggers = Triggers.objects.all()
-    return render(request, 'triggers.html', {'data': triggers, 'status': result})
+    # 7/2 start
+    if request.method == 'POST':
+        # 新建触发器
+        triggers_name = request.POST.get("triggers_name", None)
+        triggers_memo = request.POST.get("triggers_memo", None)
+        print("name, memo", triggers_name, triggers_memo)
+        try:
+            Triggers.objects.create(name=triggers_name, memo=triggers_memo)
+        except Exception as err:
+            print("触发器创建失败", err)
+        return redirect("/ad/monitor/triggers/")
+    else:
+        # 7/2 end
+        return render(request, 'triggers.html', {'data': triggers, 'status': result})
 
 
 def server_monitor_warning(request):
@@ -495,7 +533,7 @@ def server_monitor_warning_update(request):
 
 
 def server_monitor_message(request, u_id):
-    if request.META.get("REMOTE_ADDR", None) != "192.168.115.21":
+    if request.META.get("REMOTE_ADDR", None) != "192.168.115.20":
         return HttpResponse(status=444)
     try:
         rule_index = RuleIndex.objects.get(id=u_id)
@@ -505,6 +543,9 @@ def server_monitor_message(request, u_id):
         host_group = HostGroup.objects.get(templates=templates_id)
         hosts = Asset.objects.filter(hostgroup=host_group.id)
         triggers_times_choice = (1, 3, 5, 10, 15, 30)
+        triggers_times = triggers_times_choice[rule_index.triggers_times]
+        triggers_diff = rule_index.triggers_diff_choice[rule_index.triggers_diff][1]
+        triggers_value = rule_index.triggers_value
         host_list = []
         temp_warning_status = 0
         rule_index_switch = rule_index.switch
@@ -514,65 +555,59 @@ def server_monitor_message(request, u_id):
             rule_result_query_set = RuleResult.objects.filter(host=hostname)
             data = json.loads(rule_result_query_set[len(rule_result_query_set) - 1].data)
             print(type(rule_index_switch), rule_index_switch)
+            # 检测监控是启动状态
             if not rule_index_switch:
                 break
+            # 检测主机列表不为空
             if len(RuleResult.objects.filter(host=hostname)) == 0:
                 continue
+            # 检查数据是否超时且不是ping检测, ping检测是服务端检测
             elif time.mktime(rule_result_query_set[len(rule_result_query_set)-1].time.timetuple()) + 120\
-                    < time.time():
+                    < time.time() and rule_index_name != 0:
                 continue
             else:
-                triggers_times = triggers_times_choice[rule_index.triggers_times]
-                triggers_diff = rule_index.triggers_diff_choice[rule_index.triggers_diff][1]
-                triggers_value = rule_index.triggers_value
                 # print(triggers_times, triggers_diff, triggers_value)
                 # print(type(triggers_times), type(triggers_diff), type(triggers_value))
                 rule_index_name_choice = ("ping", "cpupercent", "mempercent", "inode",
                                           "diskpercent", "IOPS", "sentbyte",
                                           "connections", "recvbyte", "LISTEN")
-                if rule_index_name_choice[rule_index_name] == 'ping':
+                temp_warning_rule_name = rule_index_name_choice[rule_index_name]
+                # 服务器宕机检测
+                if temp_warning_rule_name == 'ping':
                     # noinspection PyBroadException
                     try:
                         print("ip", item.ip)
-                        tn = telnetlib.Telnet(item.ip, '22', timeout=2)
+                        tn = telnetlib.Telnet(item.ip, '22', timeout=5)
                         tn.close()
+                        # 无告警/告警恢复
+                        warning_recover(rule_index, triggers_times, rule_index_name_choice)
+                        continue
                     except Exception:
                         temp_warning_status += 1
-                        if rule_index.warning > 0:
-                            send_mail(hostname,
-                                      host_group.name,
-                                      rule_index_name_choice[rule_index_name],
-                                      -1)
-                    continue
+                        # 告警动作
+                        warning_action(rule_index, triggers_times, hostname, host_group,
+                                       temp_warning_rule_name, -1)
+                        continue
                 print(rule_index_name)
-                print(data[rule_index_name_choice[rule_index_name]])
-                result_data = data[rule_index_name_choice[rule_index_name]]
+                print(data[temp_warning_rule_name])
+                result_data = data[temp_warning_rule_name]
                 # print(str(result_data) + triggers_diff + str(triggers_value))
                 # print(type(result_data))
+                # 服务器 CPU 内存检测
                 if type(result_data) is float or type(result_data) is int:
                     if eval(str(result_data) + triggers_diff + str(triggers_value)):
-                        print("参数%s ,当前值为%f" % (rule_index_name_choice[rule_index_name], result_data))
+                        print("参数%s ,当前值为%f" % (temp_warning_rule_name, result_data))
                         temp_warning_status += 1
-                        # 邮件报警
-                        if rule_index.warning > 0 and\
-                                rule_index.warning % triggers_times == 1:
-                            send_mail(hostname,
-                                      host_group.name,
-                                      rule_index_name_choice[rule_index_name],
-                                      result_data)
+                        # 大于触发次数, 进行邮件报警
+                        warning_action(rule_index, triggers_times, hostname, host_group,
+                                       temp_warning_rule_name, result_data)
                         print(rule_index.warning, host_group.name)
                         break
                     else:
-                        print(rule_index.warning - triggers_times)
-                        if rule_index.warning > 0:
-                            print("本次告警持续时间为: %d 分钟" %
-                                  ((rule_index.warning - 1 + triggers_times) * 5))
-                        else:
-                            print("%s,参数正常" % rule_index_name_choice[rule_index_name])
-                        # reset warning value
-                        temp_warning_status += 0
+                        # 无告警/告警恢复
+                        warning_recover(rule_index, triggers_times, rule_index_name_choice)
                 elif type(result_data) is dict:
-                    temp_warning_rule_name = rule_index_name_choice[rule_index_name]
+                    # 多性能指标参数监控 如: 磁盘 网卡
                     for k in result_data:
                         if temp_warning_rule_name == "sentbyte" or temp_warning_rule_name == "recvbyte":
                             temp_last_data = json.loads(rule_result_query_set[len(rule_result_query_set) - 2].data)
@@ -582,61 +617,38 @@ def server_monitor_message(request, u_id):
                         if eval(str(result_data[k]).strip("%") + "-" + str(temp_last_value) +
                                 triggers_diff + str(triggers_value)):
                             if type(result_data[k]) != str:
-                                # 邮件报警
-                                if rule_index.warning > 0 and \
-                                        rule_index.warning % triggers_times == 1:
-                                    send_mail(hostname,
-                                              host_group.name,
-                                              rule_index_name_choice[rule_index_name],
-                                              result_data)
+                                # 告警动作
+                                warning_action(rule_index, triggers_times, hostname, host_group,
+                                               temp_warning_rule_name, result_data)
                                 print("参数%s ,当前值为%f" %
-                                      (rule_index_name_choice[rule_index_name], result_data[k]))
-                                print(result_data[k]-temp_last_value)
-                            elif type(result_data[k]) == str:
+                                      (temp_warning_rule_name, result_data[k]))
+                                print(result_data[k] - temp_last_value)
+                            # inode数据, 删除去除百分号
+                            elif temp_warning_rule_name == "inode":
                                 print("参数%s ,当前值为%f" %
-                                      (rule_index_name_choice[rule_index_name], int(result_data[k].strip("%"))))
+                                      (temp_warning_rule_name, int(result_data[k].strip("%"))))
                             temp_warning_status += 1
                             break
                         else:
-                            temp_warning_status += 0
-                            print("参数正常")
-                    else:
-                        if rule_index.warning > 0:
-                            print("本次告警持续时间为: %d 分钟" %
-                                  ((rule_index.warning - 1 + triggers_times) * 5.0))
-                elif type(result_data) is list and rule_index_name_choice[rule_index_name] == "LISTEN":
+                            # 无告警/告警恢复
+                            warning_recover(rule_index, triggers_times, rule_index_name_choice)
+                elif type(result_data) is list and temp_warning_rule_name == "LISTEN":
+                    # 端口检查
                     addr_and_port = "0.0.0.0:" + str(triggers_value)
                     if addr_and_port not in result_data:
                         temp_warning_status += 1
-                        if rule_index.warning > 0 and\
-                                rule_index.warning % triggers_times == 1:
-                            send_mail(hostname,
-                                      host_group.name,
-                                      rule_index_name_choice[rule_index_name],
-                                      int(-1))
+                        # 告警动作
+                        warning_action(rule_index, triggers_times, hostname, host_group,
+                                       temp_warning_rule_name, result_data)
                         print(rule_index.warning, host_group.name)
                         break
                     else:
-                        print(rule_index.warning - triggers_times)
-                        if rule_index.warning > 0:
-                            print("本次告警持续时间为: %d 分钟" %
-                                  ((rule_index.warning - 1 + triggers_times) * 5))
-                        else:
-                            print("%s,参数正常" % rule_index_name_choice[rule_index_name])
-                        # reset warning value
-                        print("")
-                        temp_warning_status += 0
+                        # 无告警/告警恢复
+                        warning_recover(rule_index, triggers_times, rule_index_name_choice)
                 else:
                     print("其他")
-        if temp_warning_status > 0:
-            rule_index.warning += 1
-            if rule_index_name == 0:
-                rule_index.warning = 1
-        elif not rule_index_switch:
-            rule_index.warning = -30
-        else:
-            rule_index.warning = 1 - triggers_times
-        rule_index.save()
+        # 调用rule_index数据库保存函数
+        rule_index_save(temp_warning_status, rule_index, triggers_times)
         return render(request, "message.html",
                       {"host_group": host_group, "host_list": host_list, "data": data})
     except Exception as e:
@@ -644,7 +656,84 @@ def server_monitor_message(request, u_id):
         return HttpResponse("ok")
 
 
+def rule_index_save(temp_warning_status, rule_index, triggers_times):
+    """
+    数据库保存监控状态
+    :param temp_warning_status: 临时状态
+    :param rule_index: 数据库查询集
+    :param triggers_times: 触发器触发次数
+    :return: 保存数据到数据库
+    """
+    try:
+        print(temp_warning_status, rule_index.name)
+        if temp_warning_status > 0:
+            rule_index.warning += 1
+            if rule_index.name == 0:
+                rule_index.warning = 1
+        elif not rule_index.switch:
+            rule_index.warning = -30
+        else:
+            rule_index.warning = 1 - triggers_times
+        rule_index.save()
+    except Exception as err:
+        print("数据库储存失败", err)
+
+
+def warning_action(rule_index, triggers_times, hostname, host_group,
+                   temp_warning_rule_name, result_data, message="Email"):
+    # 告警动作
+    try:
+        print("异常", temp_warning_rule_name, rule_index.warning)
+        if temp_warning_rule_name == 'ping':
+            temp_warning_rule_name = "服务器宕机"
+        elif temp_warning_rule_name == "LISTEN":
+            result_data = -1
+        if rule_index.warning > 0 and rule_index.warning % triggers_times == 1:
+            if message == "Email":
+                # 邮件接口
+                send_mail(hostname,
+                          host_group.name,
+                          temp_warning_rule_name,
+                          result_data)
+            elif message == "Message":
+                # 短信接口待开发
+                pass
+            elif message == "ALL":
+                # 同时发送邮件和短信
+                # 邮件接口
+                send_mail(hostname,
+                          host_group.name,
+                          temp_warning_rule_name,
+                          result_data)
+                # 短信接口
+                pass
+    except Exception as err:
+        print("发件失败", err)
+
+
+def warning_recover(rule_index, triggers_times, rule_index_name_choice):
+    # 告警恢复
+    print(rule_index.warning - triggers_times)
+    if rule_index.warning > 0:
+        print("本次告警持续时间为: %d 分钟" %
+              ((rule_index.warning - 1 + triggers_times) * 5))
+        return True
+    else:
+        print(rule_index_name_choice[rule_index.name], "参数正常")
+        return False
+
+
 def send_mail(host, host_group, warning_name, warning_value):
+    """
+    # 邮件发送函数, 报警中引用
+    :param host: 主机名
+    :param host_group: 主机组
+    :param warning_name:  告警名
+    :param warning_value: 告警值
+    :return:
+        正常输出: 邮件发送成功
+        异常输出: 邮件发送失败
+    """
     # 设置服务器
     mail_host = "smtp.163.com"
     # 用户名

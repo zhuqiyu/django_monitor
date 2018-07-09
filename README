@@ -8,10 +8,10 @@ This is a monitor system
 # INSTALL
 python3 -m pip install -r requirements.txt
 # or
-pip install -r requirements.txt
+pip install -r requirement.txt
 
 
-# settings
+# settings.py
 
 please set this args
 1. DEBUG    # default True

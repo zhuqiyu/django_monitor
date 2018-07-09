@@ -3,7 +3,7 @@
 {% block content %}
 
 <h2 style='position:relative;left:3%'>主机模板</h2>
-	<form action='/ad/monitor/warning/' method='POST'>{% csrf_token %}
+	<form action='/ad/monitor/templates/' method='POST'>{% csrf_token %}
 		<table style='position:relative;left:8%;top:10px;bottom:50px' border='1'>
 			<th>
 				<td>模板名</td>
@@ -19,24 +19,22 @@
 				<td >{{item.name}}</td>
 				<td >{{item.triggers.name}}</td>
 				<td>{{item.memo}}</td>
-				<td style='border-style:none'><input id={{item.id}} type="button" value="保存" onclick="javascript:submitdata(this)"/></td>
+				<td style='border-style:none'><input id={{item.id}} type="button" value="保存"/></td>
 			</tr>		
 			{% endfor %}
 			
-			<!-- <tr name="assettable">
-				<td>{{item.id}}</td>
-				<td id="1000name">{% mymethod item.id %}</td>
-				<td ><input name="hostname"/></td>
-				<td ><input name="ip"/></td>
-				<td>{{item.create_date|date:"Y-m-d H:i:s"}}</td>
-				<td>{{item.update_date|date:"Y-m-d H:i:s"}}</td>
-				<td ><select name="groupid">
-					<option value=2>运维组</option>
-					<option value=1>管理组</option>
+			<tr name="new_templates">
+				<td></td>
+				<td><input name="templates_name"/></td>
+				<td><select name="templates_triggers">
+					{% for i in form2 %}
+					<option  value="{{i.id}}">{{i.name}}</option>
+					{% endfor  %}
 				</select></td>
+				<td><input name="templates_memo"/></td>
 				<td style='border-style:none'><input type='submit' value='新增'/></td>
-			</tr> -->
-		
+			</tr>
+			
 		</table>
 	</form>
 
@@ -67,23 +65,7 @@ var jishi=document.getElementsByClassName("td-1");
 backtop.onclick = function(){
 	document.body.scrollTop = document.documentElement.scrollTop = 0;
 }
-function submitdata(obj){
-	//alert('数据提交成功');
-	var subhm=obj.parentNode.parentNode.childNodes[5].innerHTML;
-	var subip=obj.parentNode.parentNode.childNodes[7].innerHTML;
-	$.ajax({
-		url:"/ad/assetupdate/",
-		data:{id:obj.id,hostname:subhm,ip:subip,csrfmiddlewaretoken: '{{ csrf_token }}'},
-		type:'POST',
-		success:function(data){
-			//console.log('success');
-			alert(data);
-		},
-		error:function(data){
-			console.log(data);
-		},
-	});
-}
+
 </script>
 
 {% endblock %}

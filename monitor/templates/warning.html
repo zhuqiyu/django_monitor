@@ -8,11 +8,11 @@
 			<th style="width:35px">
 				<td style="width:100px">告警名</td>
 				<td style="width:100px">触发器</td>
-				<td style="width:100px">监控时长</td>
-				<td style="width:100px">次数</td>
-				<td style="width:100px">比较符</td>
-				<td style="width:100px">数据</td>
-				<td style="width:100px">告警</td>
+				<td style="width:99px">监控时长</td>
+				<td style="width:99px">次数</td>
+				<td style="width:99px">比较符</td>
+				<td style="width:99px">数据</td>
+				<td style="width:99px">告警</td>
 				<td style="width:50px">启用</td>
 				<td style="width:50px"></td>
 			</th>
@@ -34,18 +34,18 @@
 				<td style="width:100px">{% get_warning_message item.warning %}</td>
 				{% endautoescape %}
 				{% if item.switch %}
-				<td style="width:50px"><select name="switch">
+				<td style="width:50px"><select name="switch" style="height:22px">
 				<option value="1" selected="selected">启用</option>
 				<option value="0">关闭</option>
 				</select></td>
 				{% else %}
-				<td><select name="switch">
+				<td style="width:50px"><select name="switch" style="height:22px">
 				<option value="1">启用</option>
 				<option value="0" selected="selected">关闭</option>
 				</select></td>
 				{% endif %}
 				
-				<td style='border-style:none' ><input  type="submit" value="保存" style="width:51px" /></td>
+				<td style='border-style:none' >&nbsp;<input  type="submit" value="保存" style="width:43px" /></td>
 				
 			</tr>
 			</table>
