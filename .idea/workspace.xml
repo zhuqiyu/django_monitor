@@ -2,9 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ead116c5-07d5-4f47-a8b1-7ea404cbf01c" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/monitor/ad/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/monitor/ad/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/monitor/ad/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/monitor/ad/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/monitor/templates/assetlist.html" beforeDir="false" afterPath="$PROJECT_DIR$/monitor/templates/assetlist.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/monitor/templates/hostgroup.html" beforeDir="false" afterPath="$PROJECT_DIR$/monitor/templates/hostgroup.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/monitor/templates/templetes.html" beforeDir="false" afterPath="$PROJECT_DIR$/monitor/templates/templetes.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/monitor/templates/triggers.html" beforeDir="false" afterPath="$PROJECT_DIR$/monitor/templates/triggers.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/monitor/templates/warning.html" beforeDir="false" afterPath="$PROJECT_DIR$/monitor/templates/warning.html" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -18,8 +22,8 @@
       <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/monitor/ad/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="306">
-              <caret line="483" column="42" selection-start-line="483" selection-start-column="42" selection-end-line="483" selection-end-column="42" />
+            <state relative-caret-position="348">
+              <caret line="801" column="14" selection-start-line="801" selection-start-column="4" selection-end-line="801" selection-end-column="14" />
               <folding>
                 <element signature="e#24#63#0" expanded="true" />
               </folding>
@@ -30,7 +34,7 @@
       <file leaf-file-name="manage.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/monitor/manage.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="114">
+            <state relative-caret-position="133">
               <caret line="7" column="16" selection-start-line="7" selection-end-line="8" />
               <folding>
                 <element signature="e#22#31#0" expanded="true" />
@@ -42,7 +46,7 @@
       <file leaf-file-name="settings.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/monitor/monitor/settings.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1824">
+            <state relative-caret-position="569">
               <caret line="96" column="48" selection-start-line="96" selection-start-column="48" selection-end-line="96" selection-end-column="48" />
             </state>
           </provider>
@@ -51,7 +55,7 @@
       <file leaf-file-name="forms.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/monitor/ad/forms.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="779">
+            <state relative-caret-position="569">
               <caret line="42" column="35" selection-start-line="42" selection-start-column="27" selection-end-line="42" selection-end-column="35" />
               <folding>
                 <element signature="e#38#62#0" expanded="true" />
@@ -63,8 +67,8 @@
       <file leaf-file-name="models.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/monitor/ad/models.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1235">
-              <caret line="68" column="12" selection-start-line="68" selection-start-column="4" selection-end-line="68" selection-end-column="12" />
+            <state relative-caret-position="303">
+              <caret line="54" column="13" selection-start-line="54" selection-start-column="4" selection-end-line="54" selection-end-column="13" />
               <folding>
                 <element signature="e#24#63#0" expanded="true" />
               </folding>
@@ -75,8 +79,8 @@
       <file leaf-file-name="urls.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/monitor/ad/urls.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1007">
-              <caret line="58" column="63" selection-start-line="58" selection-start-column="41" selection-end-line="58" selection-end-column="63" />
+            <state relative-caret-position="227">
+              <caret line="49" column="36" selection-start-line="49" selection-start-column="36" selection-end-line="49" selection-end-column="36" />
             </state>
           </provider>
         </entry>
@@ -224,7 +228,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.monitor (2)">
+  <component name="RunManager" selected="Python.manage_start">
     <configuration name="aaa" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="demo1" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -491,23 +495,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/monitor/monitor/settings.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1824">
-          <caret line="96" column="48" selection-start-line="96" selection-start-column="48" selection-end-line="96" selection-end-column="48" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/monitor/ad/forms.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="779">
-          <caret line="42" column="35" selection-start-line="42" selection-start-column="27" selection-end-line="42" selection-end-column="35" />
-          <folding>
-            <element signature="e#38#62#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/monitor/monitor/urls.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="399">
@@ -515,17 +502,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/monitor/ad/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1007">
-          <caret line="58" column="63" selection-start-line="58" selection-start-column="41" selection-end-line="58" selection-end-column="63" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/monitor/ad/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1235">
-          <caret line="68" column="12" selection-start-line="68" selection-start-column="4" selection-end-line="68" selection-end-column="12" />
+        <state relative-caret-position="303">
+          <caret line="54" column="13" selection-start-line="54" selection-start-column="4" selection-end-line="54" selection-end-column="13" />
           <folding>
             <element signature="e#24#63#0" expanded="true" />
           </folding>
@@ -534,7 +514,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/monitor/manage.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="114">
+        <state relative-caret-position="133">
           <caret line="7" column="16" selection-start-line="7" selection-end-line="8" />
           <folding>
             <element signature="e#22#31#0" expanded="true" />
@@ -542,10 +522,34 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/monitor/ad/forms.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="569">
+          <caret line="42" column="35" selection-start-line="42" selection-start-column="27" selection-end-line="42" selection-end-column="35" />
+          <folding>
+            <element signature="e#38#62#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/monitor/monitor/settings.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="569">
+          <caret line="96" column="48" selection-start-line="96" selection-start-column="48" selection-end-line="96" selection-end-column="48" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/monitor/ad/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="227">
+          <caret line="49" column="36" selection-start-line="49" selection-start-column="36" selection-end-line="49" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/monitor/ad/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="306">
-          <caret line="483" column="42" selection-start-line="483" selection-start-column="42" selection-end-line="483" selection-end-column="42" />
+        <state relative-caret-position="348">
+          <caret line="801" column="14" selection-start-line="801" selection-start-column="4" selection-end-line="801" selection-end-column="14" />
           <folding>
             <element signature="e#24#63#0" expanded="true" />
           </folding>

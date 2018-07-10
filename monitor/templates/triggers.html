@@ -17,14 +17,14 @@
 				<td>{{item.id}}</td>
 				<td >{{item.name}}</td>
 				<td>{{item.memo}}</td>
-				<td style='border-style:none'><input id={{item.id}} type="button" value="保存" s/></td>
+				<td style='border-style:none'><input id={{item.id}} type="button" value="保存"/></td>
 			</tr>		
 			{% endfor %}
 			
 			<tr name="new_triggers">
 				<td></td>
-				<td><input name="triggers_name"/></td>
-				<td><input name="triggers_memo"/></td>
+				<td><input name="triggers_name" style="height:16px"/></td>
+				<td><input name="triggers_memo" style="height:16px"/></td>
 				<td style='border-style:none'><input type='submit' value='新增'/></td>
 			</tr>
 		

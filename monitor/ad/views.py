@@ -226,7 +226,7 @@ def UserUpdate(request):
         return HttpResponse('404')
 
 
-def AssetList(request):
+def AssetList(request, page_num=1):
     """
     资产列表,
     :param request: 用户登录
@@ -258,17 +258,13 @@ def AssetList(request):
             print('ip', Ip)
             try:
                 Asset.objects.create(hostname=Hostname, ip=Ip, user_group=groupinstance)
-                return render(request, 'assetlist.html',
-                              {'data': asset_list, 'form': assetlistform,
-                               'host_group': host_group, 'status': result})
+                return redirect("/ad/assetlist/")
             except Exception as e:
                 logging.error(e)
                 return redirect("/ad/assetlist/")
         else:
             # return HttpResponse('ip或主机名错误')
-            return render(request, 'assetlist.html',
-                          {'data': asset_list, 'form': assetlistform,
-                           'host_group': host_group, 'status': result})
+            return redirect("/ad/assetlist/")
     else:
         return render(request, 'assetlist.html',
                       {'data': asset_list, 'form': assetlistform,
@@ -398,10 +394,20 @@ def server_monitor_hostgroup(request):
 
     # print(host_group[0].id)
     host_list = dict()
+    templetes_form = Templates.objects.all()
     # 7/2 start
     # templates_form = TemplatesForm()
     if request.method == 'POST':
-        pass
+        hostgroup_name = request.POST.get("hostgroup_name", None)
+        hostgroup_templates = request.POST.get("hostgroup_templates", None)
+        hostgroup_memo = request.POST.get("hostgroup_memo", None)
+        print("创建模板", hostgroup_name, hostgroup_templates, hostgroup_memo)
+        try:
+            HostGroup.objects.create(name=hostgroup_name,
+                                     templates_id=hostgroup_templates, memo=hostgroup_memo)
+        except Exception as err:
+            print("主机组创建失败", err)
+        return redirect("/ad/monitor/hostgroup/")
     else:
         # 7/2 end
         for i in host_group:
@@ -411,7 +417,8 @@ def server_monitor_hostgroup(request):
                 host_list[i.id].append(item.hostname)
         print(host_list)
         return render(request, 'hostgroup.html',
-                      {'data': host_group, "host_list": host_list, 'status': result})
+                      {'data': host_group, "host_list": host_list,
+                       'status': result, "form2": templetes_form})
 
 
 def server_monitor_templates(request):
@@ -463,7 +470,7 @@ def server_monitor_triggers(request):
         return render(request, 'triggers.html', {'data': triggers, 'status': result})
 
 
-def server_monitor_warning(request, page_num):
+def server_monitor_warning(request, page_num=1):
     """
     告警显示(get), 添加新的告警规则(post)
     :param request: 用户请求
@@ -476,12 +483,22 @@ def server_monitor_warning(request, page_num):
     rule_index = RuleIndex.objects.all()
     default_size = 10
     page_total = int((len(rule_index)+default_size-1)/default_size)
+    print(page_total)
     if 0 < page_num < page_total:
         page_value = page_num * default_size
         page_min = page_value - default_size
+        down_page = page_num + 1
+        up_page = page_num - 1
+        if page_num == 1:
+            up_page = page_num
     elif page_num == page_total:
-        page_value = page_total
-        page_min = page_value - len(rule_index) % default_size
+        page_value = len(rule_index)
+        page_min = len(rule_index) - len(rule_index) % default_size
+        down_page = page_num
+        up_page = page_num - 1
+        if page_total == 1:
+            up_page = page_num
+        print(page_value, page_min)
     else:
         return HttpResponse("please input valid page number")
     try:
@@ -513,7 +530,7 @@ def server_monitor_warning(request, page_num):
                 RuleIndex.objects.create(name=post_name, triggers_id=post_triggers, time=post_time,
                                          triggers_times=post_triggers_times, triggers_diff=post_triggers_diff,
                                          triggers_value=post_triggers_value, warning=post_warning, switch=switch)
-                return redirect('/ad/monitor/warning/')
+                return redirect('/ad/monitor/warning/%d/' % page_total)
             except Exception as e:
                 logging.error("form.save", e)
         else:
@@ -522,7 +539,9 @@ def server_monitor_warning(request, page_num):
             result = '表单无效'
             return HttpResponse(result)
     return render(request, 'warning.html', {'data': page_content, 'form': triggers,
-                                            "form2": rule_index_form, 'status': result})
+                                            "down_page": down_page, "up_page": up_page,
+                                            "page_num": page_num, "form2": rule_index_form,
+                                            'status': result})
 
 
 def server_monitor_warning_update(request):
@@ -778,3 +797,26 @@ def send_mail(host, host_group, warning_name, warning_value):
         print("邮件发送成功")
     except smtplib.SMTPException as e:
         print("Error: 无法发送邮件", e)
+
+
+def pagination(table_queryset, page_num, default_size=10):
+    page_total = int((len(table_queryset) + default_size - 1) / default_size)
+    print(page_total)
+    if 0 < page_num < page_total:
+        page_value = page_num * default_size
+        page_min = page_value - default_size
+        down_page = page_num + 1
+        up_page = page_num - 1
+        if page_num == 1:
+            up_page = page_num
+    elif page_num == page_total:
+        page_value = len(table_queryset)
+        page_min = len(table_queryset) - len(table_queryset) % default_size
+        down_page = page_num
+        up_page = page_num - 1
+        if page_total == 1:
+            up_page = page_num
+        print(page_value, page_min)
+    else:
+        return HttpResponse("please input valid page number")
+    return down_page, up_page

@@ -25,13 +25,13 @@
 			
 			<tr name="new_templates">
 				<td></td>
-				<td><input name="templates_name"/></td>
-				<td><select name="templates_triggers">
+				<td><input name="templates_name" style="height:16px"/></td>
+				<td><select name="templates_triggers" style="height:22px">
 					{% for i in form2 %}
 					<option  value="{{i.id}}">{{i.name}}</option>
 					{% endfor  %}
 				</select></td>
-				<td><input name="templates_memo"/></td>
+				<td><input name="templates_memo" style="height:16px"/></td>
 				<td style='border-style:none'><input type='submit' value='新增'/></td>
 			</tr>
 			

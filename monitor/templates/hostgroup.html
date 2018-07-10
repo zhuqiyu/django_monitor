@@ -3,7 +3,7 @@
 {% block content %}
 
 <h2 style='position:relative;left:3%'>主机组</h2>
-	<form action='/ad/monitor/warning/' method='POST'>{% csrf_token %}
+	<form action='/ad/monitor/hostgroup/' method='POST'>{% csrf_token %}
 		<table style='position:relative;left:8%;top:10px;bottom:50px' border='1'>
 			<th>
 				<td>主机组</td>
@@ -38,6 +38,19 @@
 				</select></td>
 				<td style='border-style:none'><input type='submit' value='新增'/></td>
 			</tr> -->
+			
+			<tr name="new_hostgroup">
+				<td></td>
+				<td><input name="hostgroup_name" style="height:16px"/></td>
+				<td><select name="hostgroup_templates" style="height:22px">
+					{% for i in form2 %}
+					<option  value="{{i.id}}">{{i.name}}</option>
+					{% endfor  %}
+				</select></td>
+				<td><input name="hostgroup_memo" style="height:16px"/></td>
+				<td></td>
+				<td style='border-style:none'><input type='submit' value='新增'/></td>
+			</tr>
 		
 		</table>
 	</form>

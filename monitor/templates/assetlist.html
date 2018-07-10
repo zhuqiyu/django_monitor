@@ -40,11 +40,11 @@
 				<td ><input name="ip"/></td>
 				<td ></td>
 				<td></td>
-				<td ><select name="user_group">
+				<td ><select name="user_group" style="height:22px">
 					<option value=1 >管理组</option>
 					<option value=2 selected = "selected">运维组</option>
 				</select></td>
-				<td><select name="hostgroup">
+				<td><select name="hostgroup" style="height:22px">
 					{% for item in host_group %}
 					<option value="{{item.id}}">{{item.name}}</option>
 					{% endfor %}

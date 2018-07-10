@@ -48,10 +48,11 @@
 				<td style='border-style:none' >&nbsp;<input  type="submit" value="保存" style="width:43px" /></td>
 				
 			</tr>
+			
 			</table>
+			
 			</form>
 			{% endfor %}
-
 			<!-- <tr name="assettable">
 				<td>{{item.id}}</td>
 				<td id="1000name">{% mymethod item.id %}</td>
@@ -65,9 +66,13 @@
 				</select></td>
 				<td style='border-style:none'><input type='submit' value='新增'/></td>
 			</tr> -->
-		
-		</table>
-	
+		<form><table style='position:relative;left:31%;top:20px;bottom:50px' border="1px">
+		<tr ><div >
+			<td><a href="/ad/monitor/warning/{{up_page}}/">上一页</a></td>
+			<td>&nbsp;<span>{{page_num}}</span>&nbsp;</td>
+			<td><a href="/ad/monitor/warning/{{down_page}}/">下一页</a></td>
+		</div></tr>
+		</table></form>
 <h2 style='position:relative;left:3%'>新增报警规则</h2>
 
 <form action='/ad/monitor/warning/' method='POST'>{% csrf_token %}
@@ -75,7 +80,7 @@
 				<tr name="new_asset_table">
 				<td></td>
 				<td>{{form2.name}}</td>
-				<td><select name="triggers">
+				<td><select name="triggers" style="margin-top: 5px">
 					{% for i in form %}
 					<option  value="{{i.id}}">{{i.name}}</option>
 					{% endfor  %}
