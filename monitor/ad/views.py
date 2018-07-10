@@ -463,15 +463,31 @@ def server_monitor_triggers(request):
         return render(request, 'triggers.html', {'data': triggers, 'status': result})
 
 
-def server_monitor_warning(request):
+def server_monitor_warning(request, page_num):
     """
-    告警显示, 添加新的告警规则
+    告警显示(get), 添加新的告警规则(post)
     :param request: 用户请求
+    :param page_num: 请求页面
     :return:
     """
     if not request.session.get('username', None):
         return redirect('/ad/login/')
+    # rule_index 是报警规则
     rule_index = RuleIndex.objects.all()
+    default_size = 10
+    page_total = int((len(rule_index)+default_size-1)/default_size)
+    if 0 < page_num < page_total:
+        page_value = page_num * default_size
+        page_min = page_value - default_size
+    elif page_num == page_total:
+        page_value = page_total
+        page_min = page_value - len(rule_index) % default_size
+    else:
+        return HttpResponse("please input valid page number")
+    try:
+        page_content = rule_index[page_min:page_value]
+    except Exception as err:
+        print(err)
     result = ''
     rule_index_form = RuleIndexForm()
     triggers = Triggers.objects.all()
@@ -503,8 +519,9 @@ def server_monitor_warning(request):
         else:
             print("表单无效")
             print(form.clean())
-            result = '无效的用户名/密码'
-    return render(request, 'warning.html', {'data': rule_index, 'form': triggers,
+            result = '表单无效'
+            return HttpResponse(result)
+    return render(request, 'warning.html', {'data': page_content, 'form': triggers,
                                             "form2": rule_index_form, 'status': result})
 
 

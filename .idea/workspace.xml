@@ -2,20 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ead116c5-07d5-4f47-a8b1-7ea404cbf01c" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/demo1.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/demo1.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README" beforeDir="false" afterPath="$PROJECT_DIR$/README" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/monitor/ad/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/monitor/ad/forms.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/monitor/ad/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/monitor/ad/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/monitor/ad/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/monitor/ad/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/monitor/monitor/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/monitor/monitor/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/monitor/static/css/login.css" beforeDir="false" afterPath="$PROJECT_DIR$/monitor/static/css/login.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/monitor/templates/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/monitor/templates/login.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/monitor/templates/login2.html" beforeDir="false" afterPath="$PROJECT_DIR$/monitor/templates/login2.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/monitor/templates/master/layout.html" beforeDir="false" afterPath="$PROJECT_DIR$/monitor/templates/master/layout.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/monitor/templates/templetes.html" beforeDir="false" afterPath="$PROJECT_DIR$/monitor/templates/templetes.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/monitor/templates/triggers.html" beforeDir="false" afterPath="$PROJECT_DIR$/monitor/templates/triggers.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/monitor/templates/warning.html" beforeDir="false" afterPath="$PROJECT_DIR$/monitor/templates/warning.html" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -29,8 +18,8 @@
       <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/monitor/ad/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="179">
-              <caret line="607" column="66" selection-start-line="607" selection-start-column="52" selection-end-line="607" selection-end-column="66" />
+            <state relative-caret-position="306">
+              <caret line="483" column="42" selection-start-line="483" selection-start-column="42" selection-end-line="483" selection-end-column="42" />
               <folding>
                 <element signature="e#24#63#0" expanded="true" />
               </folding>
@@ -46,15 +35,6 @@
               <folding>
                 <element signature="e#22#31#0" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="README" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/README">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="703">
-              <caret line="37" column="55" selection-start-line="37" selection-start-column="46" selection-end-line="37" selection-end-column="55" />
             </state>
           </provider>
         </entry>
@@ -95,8 +75,8 @@
       <file leaf-file-name="urls.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/monitor/ad/urls.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="988">
-              <caret line="57" column="39" selection-start-line="57" selection-start-column="39" selection-end-line="57" selection-end-column="39" />
+            <state relative-caret-position="1007">
+              <caret line="58" column="63" selection-start-line="58" selection-start-column="41" selection-end-line="58" selection-end-column="63" />
             </state>
           </provider>
         </entry>
@@ -130,7 +110,7 @@
       <find>.value</find>
       <find>hostgroup</find>
       <find>ali</find>
-      <find />
+      <find>if not</find>
       <find>triggers_times_choice[rule_index.triggers_times]</find>
       <find>id</find>
       <find>datetime</find>
@@ -143,6 +123,8 @@
       <find>告警恢复</find>
       <find>rule_index_form</find>
       <find>warning_recover</find>
+      <find>无监控数据</find>
+      <find>server_monitor_host</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -166,17 +148,17 @@
         <option value="$PROJECT_DIR$/server/crontab" />
         <option value="$PROJECT_DIR$/client/crontab" />
         <option value="$PROJECT_DIR$/monitor/ad/templatetags/oldboy.py" />
-        <option value="$PROJECT_DIR$/monitor/ad/urls.py" />
         <option value="$PROJECT_DIR$/monitor/ad/models.py" />
         <option value="$PROJECT_DIR$/README" />
         <option value="$PROJECT_DIR$/monitor/monitor/settings.py" />
         <option value="$PROJECT_DIR$/monitor/ad/forms.py" />
-        <option value="$PROJECT_DIR$/monitor/ad/views.py" />
         <option value="$PROJECT_DIR$/../../../monitor (2).py" />
+        <option value="$PROJECT_DIR$/monitor/ad/urls.py" />
+        <option value="$PROJECT_DIR$/monitor/ad/views.py" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="520" />
     <option name="width" value="1400" />
     <option name="height" value="1000" />
@@ -187,7 +169,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -216,6 +197,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -332,18 +314,17 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.203125" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.503125" side_tool="true" weight="0.32944915" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49791667" weight="0.30106384" />
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Python Console" order="7" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.49791667" visible="true" weight="0.30106384" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="Terminal" order="7" />
-      <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.3993644" />
+      <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="right" id="Commander" order="0" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -480,65 +461,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/monitor/monitor/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="399">
-          <caret line="22" column="32" selection-start-line="22" selection-start-column="28" selection-end-line="22" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://C:/Python35/Lib/site-packages/django/db/models/fields/related.py" />
-    <entry file="file://$PROJECT_DIR$/monitor/ad/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="988">
-          <caret line="57" column="39" selection-start-line="57" selection-start-column="39" selection-end-line="57" selection-end-column="39" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/monitor/ad/forms.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="779">
-          <caret line="42" column="35" selection-start-line="42" selection-start-column="27" selection-end-line="42" selection-end-column="35" />
-          <folding>
-            <element signature="e#38#62#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/monitor/ad/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1235">
-          <caret line="68" column="12" selection-start-line="68" selection-start-column="4" selection-end-line="68" selection-end-column="12" />
-          <folding>
-            <element signature="e#24#63#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/monitor/monitor/settings.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1824">
-          <caret line="96" column="48" selection-start-line="96" selection-start-column="48" selection-end-line="96" selection-end-column="48" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/monitor/manage.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="114">
-          <caret line="7" column="16" selection-start-line="7" selection-end-line="8" />
-          <folding>
-            <element signature="e#22#31#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/README">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="703">
-          <caret line="37" column="55" selection-start-line="37" selection-start-column="46" selection-end-line="37" selection-end-column="55" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python35-32/Lib/site-packages/joblib/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-228" />
@@ -558,16 +481,71 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="456">
           <caret line="24" column="47" selection-start-line="24" selection-start-column="47" selection-end-line="24" selection-end-column="47" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/README">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="593">
+          <caret line="37" column="55" selection-start-line="37" selection-start-column="46" selection-end-line="37" selection-end-column="55" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/monitor/monitor/settings.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1824">
+          <caret line="96" column="48" selection-start-line="96" selection-start-column="48" selection-end-line="96" selection-end-column="48" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/monitor/ad/forms.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="779">
+          <caret line="42" column="35" selection-start-line="42" selection-start-column="27" selection-end-line="42" selection-end-column="35" />
           <folding>
-            <element signature="e#56#76#0" expanded="true" />
+            <element signature="e#38#62#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/monitor/monitor/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="399">
+          <caret line="22" column="32" selection-start-line="22" selection-start-column="28" selection-end-line="22" selection-end-column="32" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/monitor/ad/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1007">
+          <caret line="58" column="63" selection-start-line="58" selection-start-column="41" selection-end-line="58" selection-end-column="63" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/monitor/ad/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1235">
+          <caret line="68" column="12" selection-start-line="68" selection-start-column="4" selection-end-line="68" selection-end-column="12" />
+          <folding>
+            <element signature="e#24#63#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/monitor/manage.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="114">
+          <caret line="7" column="16" selection-start-line="7" selection-end-line="8" />
+          <folding>
+            <element signature="e#22#31#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/monitor/ad/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="179">
-          <caret line="607" column="66" selection-start-line="607" selection-start-column="52" selection-end-line="607" selection-end-column="66" />
+        <state relative-caret-position="306">
+          <caret line="483" column="42" selection-start-line="483" selection-start-column="42" selection-end-line="483" selection-end-column="42" />
           <folding>
             <element signature="e#24#63#0" expanded="true" />
           </folding>
