@@ -7,7 +7,7 @@ from .models import (UserInfo, Salt, UserGroup, Asset, HostGroup,
 
 # Create your views here.
 
-from .forms import RegisterForm, AssetListForm, RuleIndexForm, TemplatesForm
+from .forms import RegisterForm, AssetListForm, RuleIndexForm
 from django.http.response import HttpResponse
 from .Authcode import authCode
 import logging
@@ -130,13 +130,15 @@ def Register(request):
                     print(salt_password)
                     password = hashlib.md5(salt_password).hexdigest()
                     salt_id = Salt.objects.create(value=salt).id
-                    UserInfo.objects.create(user_type=user_type, name=name, password=password,
-                                            email=email, memo=memo, salt_id=salt_id)
+                    UserInfo.objects.create(user_type=user_type, name=name,
+                                            password=password, email=email,
+                                            memo=memo, salt_id=salt_id)
                     # form.save()
                     return redirect('/ad/login/')
                 except Exception as e:
                     logging.error("form.save()", e)
-                    return render(request, 'register.html', {'form': registerForm, 'status': result})
+                    return render(request, 'register.html',
+                                  {'form': registerForm, 'status': result})
             # form.save()
         else:
             # print form.errors.as_json()
@@ -230,6 +232,7 @@ def AssetList(request, page_num=1):
     """
     资产列表,
     :param request: 用户登录
+    :param page_num: 页码
     @return:
         result: 状态
         asset_list: asset表的objects数据
@@ -239,6 +242,17 @@ def AssetList(request, page_num=1):
     if not request.session.get('username', None):
         return redirect('/ad/login/')
     asset_list = Asset.objects.all()
+    # 调用分页函数
+    pagination_value = pagination(table_queryset=asset_list,
+                                  page_num=page_num, default_size=10)
+    if not pagination_value:
+        return HttpResponse("please input valid page number")
+    else:
+        down_page, up_page, page_min, page_value, page_total = pagination_value
+    try:
+        page_content = asset_list[page_min:page_value]
+    except Exception as err:
+        print(err)
     result = ''
     assetlistform = AssetListForm()
     host_group = HostGroup.objects.all()
@@ -257,8 +271,9 @@ def AssetList(request, page_num=1):
             print('Hostname', Hostname)
             print('ip', Ip)
             try:
-                Asset.objects.create(hostname=Hostname, ip=Ip, user_group=groupinstance)
-                return redirect("/ad/assetlist/")
+                Asset.objects.create(hostname=Hostname, ip=Ip,
+                                     user_group=groupinstance)
+                return redirect("/ad/assetlist/%d/" % page_total)
             except Exception as e:
                 logging.error(e)
                 return redirect("/ad/assetlist/")
@@ -267,25 +282,41 @@ def AssetList(request, page_num=1):
             return redirect("/ad/assetlist/")
     else:
         return render(request, 'assetlist.html',
-                      {'data': asset_list, 'form': assetlistform,
-                       'host_group': host_group, 'status': result})
+                      {'data': page_content, 'form': assetlistform,
+                       "down_page": down_page, "up_page": up_page,
+                       "page_num": page_num, 'host_group': host_group,
+                       'status': result})
 
 
-def UserList(request):
+def UserList(request, page_num=1):
     """
 
     :param request: 用户登录
+    :param page_num: 页码
     @return:
         user_list_name: table 标题
         user_list: 用户数据
     """
+    user_list = UserInfo.objects.all()
+    # 调用分页函数
+    pagination_value = pagination(table_queryset=user_list,
+                                  page_num=page_num, default_size=10)
+    if not pagination_value:
+        return HttpResponse("please input valid page number")
+    else:
+        down_page, up_page, page_min, page_value, page_total = pagination_value
+    try:
+        page_content = user_list[page_min:page_value]
+    except Exception as err:
+        print(err)
     if not request.session.get('username', None):
         return redirect('/ad/login/')
     elif request.session['username'] != "superadmin":
         return redirect('/ad/assetlist/')
-    user_list = UserInfo.objects.all()
     user_list_name = ('name', 'email', 'memo', 'typeId', '修改时间', u'创建时间')
-    return render(request, 'userlist.html', {'data': user_list, 'list': user_list_name})
+    return render(request, 'userlist.html',
+                  {'data': page_content, "down_page": down_page,
+                   "up_page": up_page, "page_num": page_num, 'list': user_list_name})
 
 
 def server_monitor(request, name):
@@ -385,13 +416,23 @@ def server_monitor_host(request):
         return redirect("/ad/monitor/hostgroup/")
 
 
-def server_monitor_hostgroup(request):
-    """功能未开发"""
+def server_monitor_hostgroup(request, page_num=1):
+    """主机组管理"""
     if not request.session.get('username', None):
         return redirect('/ad/login/')
     result = ''
     host_group = HostGroup.objects.all()
-
+    # 调用分页函数
+    pagination_value = pagination(table_queryset=host_group,
+                                  page_num=page_num, default_size=10)
+    if not pagination_value:
+        return HttpResponse("please input valid page number")
+    else:
+        down_page, up_page, page_min, page_value, page_total = pagination_value
+    try:
+        page_content = host_group[page_min:page_value]
+    except Exception as err:
+        print(err)
     # print(host_group[0].id)
     host_list = dict()
     templetes_form = Templates.objects.all()
@@ -404,10 +445,11 @@ def server_monitor_hostgroup(request):
         print("创建模板", hostgroup_name, hostgroup_templates, hostgroup_memo)
         try:
             HostGroup.objects.create(name=hostgroup_name,
-                                     templates_id=hostgroup_templates, memo=hostgroup_memo)
+                                     templates_id=hostgroup_templates,
+                                     memo=hostgroup_memo)
         except Exception as err:
             print("主机组创建失败", err)
-        return redirect("/ad/monitor/hostgroup/")
+        return redirect("/ad/monitor/hostgroup/%d/" % page_total)
     else:
         # 7/2 end
         for i in host_group:
@@ -417,16 +459,29 @@ def server_monitor_hostgroup(request):
                 host_list[i.id].append(item.hostname)
         print(host_list)
         return render(request, 'hostgroup.html',
-                      {'data': host_group, "host_list": host_list,
-                       'status': result, "form2": templetes_form})
+                      {'data': page_content, "host_list": host_list,
+                       "down_page": down_page, "up_page": up_page,
+                       "page_num": page_num, 'status': result,
+                       "form2": templetes_form})
 
 
-def server_monitor_templates(request):
-    """功能未开发"""
+def server_monitor_templates(request, page_num=1):
+    """模板管理"""
     if not request.session.get('username', None):
         return redirect('/ad/login/')
     result = ''
     templetes = Templates.objects.all()
+    # 调用分页函数
+    pagination_value = pagination(table_queryset=templetes,
+                                  page_num=page_num, default_size=10)
+    if not pagination_value:
+        return HttpResponse("please input valid page number")
+    else:
+        down_page, up_page, page_min, page_value, page_total = pagination_value
+    try:
+        page_content = templetes[page_min:page_value]
+    except Exception as err:
+        print(err)
     # templates_form = TemplatesForm()
     triggers_form = Triggers.objects.all()
     # 7/2 start
@@ -437,23 +492,36 @@ def server_monitor_templates(request):
         print("创建模板", templates_name, templates_triggers, templates_memo)
         try:
             Templates.objects.create(name=templates_name,
-                                     triggers_id=templates_triggers, memo=templates_memo)
+                                     triggers_id=templates_triggers,
+                                     memo=templates_memo)
         except Exception as err:
             print("模板创建失败", err)
-        return redirect("/ad/monitor/templates/")
+        return redirect("/ad/monitor/templates/%d/" % page_total)
     else:
         # 7/2 end
         return render(request, 'templetes.html',
-                      {'data': templetes,'status': result,
-                       "form2": triggers_form})
+                      {'data': page_content, 'status': result,
+                       "down_page": down_page, "up_page": up_page,
+                       "page_num": page_num, "form2": triggers_form})
 
 
-def server_monitor_triggers(request):
-    """功能未开发"""
+def server_monitor_triggers(request, page_num=1):
+    """触发器管理"""
     if not request.session.get('username', None):
         return redirect('/ad/login/')
     result = ''
     triggers = Triggers.objects.all()
+    # 调用分页函数
+    pagination_value = pagination(table_queryset=triggers,
+                                  page_num=page_num, default_size=10)
+    if not pagination_value:
+        return HttpResponse("please input valid page number")
+    else:
+        down_page, up_page, page_min, page_value, page_total = pagination_value
+    try:
+        page_content = triggers[page_min:page_value]
+    except Exception as err:
+        print(err)
     # 7/2 start
     if request.method == 'POST':
         # 新建触发器
@@ -464,10 +532,13 @@ def server_monitor_triggers(request):
             Triggers.objects.create(name=triggers_name, memo=triggers_memo)
         except Exception as err:
             print("触发器创建失败", err)
-        return redirect("/ad/monitor/triggers/")
+        return redirect("/ad/monitor/triggers/%d/" % page_total)
     else:
         # 7/2 end
-        return render(request, 'triggers.html', {'data': triggers, 'status': result})
+        return render(request, 'triggers.html',
+                      {'data': page_content, "down_page": down_page,
+                       "up_page": up_page, "page_num": page_num,
+                       'status': result})
 
 
 def server_monitor_warning(request, page_num=1):
@@ -481,26 +552,13 @@ def server_monitor_warning(request, page_num=1):
         return redirect('/ad/login/')
     # rule_index 是报警规则
     rule_index = RuleIndex.objects.all()
-    default_size = 10
-    page_total = int((len(rule_index)+default_size-1)/default_size)
-    print(page_total)
-    if 0 < page_num < page_total:
-        page_value = page_num * default_size
-        page_min = page_value - default_size
-        down_page = page_num + 1
-        up_page = page_num - 1
-        if page_num == 1:
-            up_page = page_num
-    elif page_num == page_total:
-        page_value = len(rule_index)
-        page_min = len(rule_index) - len(rule_index) % default_size
-        down_page = page_num
-        up_page = page_num - 1
-        if page_total == 1:
-            up_page = page_num
-        print(page_value, page_min)
-    else:
+    # 调用分页函数
+    pagination_value = pagination(table_queryset=rule_index,
+                                  page_num=page_num, default_size=10)
+    if not pagination_value:
         return HttpResponse("please input valid page number")
+    else:
+        down_page, up_page, page_min, page_value, page_total = pagination_value
     try:
         page_content = rule_index[page_min:page_value]
     except Exception as err:
@@ -800,6 +858,13 @@ def send_mail(host, host_group, warning_name, warning_value):
 
 
 def pagination(table_queryset, page_num, default_size=10):
+    """
+    分页函数
+    :param table_queryset: 数据库表查询集合
+    :param page_num: 页码
+    :param default_size: 页面大小
+    :return: 返回 下一页, 上一页, 页面开始处, 集合长度, 最大页码
+    """
     page_total = int((len(table_queryset) + default_size - 1) / default_size)
     print(page_total)
     if 0 < page_num < page_total:
@@ -818,5 +883,5 @@ def pagination(table_queryset, page_num, default_size=10):
             up_page = page_num
         print(page_value, page_min)
     else:
-        return HttpResponse("please input valid page number")
-    return down_page, up_page
+        return False
+    return down_page, up_page, page_min, page_value, page_total
