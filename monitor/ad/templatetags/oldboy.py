@@ -61,7 +61,7 @@ def get_warning_message(v1):
     if v1 > 0:
         return "<span style='color:red'>异常</span>"
     elif v1 == -30:
-        return "<span style='color:red'>监控关闭</span>"
+        return "<span style='color:orange'>监控关闭</span>"
     else:
         return "<span style='color:green'>正常</span>"
 
