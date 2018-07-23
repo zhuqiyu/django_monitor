@@ -30,7 +30,17 @@ class authCode(object):
         # 背景颜色，默认为白色
         self.bgcolor = (255, 255, 255)
         # 字体颜色，默认为蓝色
-        self.fontcolor = (0, 0, 255)
+        self.fontcolor_list = [(0, 0, 255), (0, 255, 0), (0, 0, 0)]
+        temp_int = random.randint(0, 2)
+        if temp_int == 1:
+            self.color = u'绿色'
+            self.fontcolor = self.fontcolor_list[temp_int]
+        elif temp_int == 2:
+            self.color = u'黑色'
+            self.fontcolor = self.fontcolor_list[temp_int]
+        else:
+            self.color = u'蓝色'
+            self.fontcolor = self.fontcolor_list[temp_int]
         # 干扰线颜色。默认为红色
         self.linecolor = (255, 0, 0)
         # 是否要加入干扰线
