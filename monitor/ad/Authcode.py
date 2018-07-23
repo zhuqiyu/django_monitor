@@ -60,7 +60,19 @@ class authCode(object):
         draw.text(((width - font_width) / 5, (height - font_height) / 5), text,
                   font=font, fill=(255, 0, 0))  # 填充字符串
 
-
+    # 生成颜色图片
+    def create_color(self):
+        height = 18  # 宽和高
+        width = 30
+        image2 = Image.new('RGBA', (width, height), self.bgcolor)  # 创建图片
+        font = ImageFont.truetype(self.font_path, 15)  # 验证码的字体
+        draw = ImageDraw.Draw(image2)  # 创建画笔
+        font_width, font_height = font.getsize(self.text)
+        draw.text(((width - font_width) / self.number, (height - font_height) / self.number), self.color,
+                  font=font, fill=self.fontcolor)  # 填充字符串
+        buf2 = io.BytesIO()  # io.BytesIO() #io.StringIO() use it to fill str obj
+        image2.save(buf2, 'png')
+        return buf2.getvalue(), 'image/png'
 
     # 生成验证码
     def gene_code(self):

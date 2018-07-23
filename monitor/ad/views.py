@@ -88,6 +88,9 @@ def ad_exit(request):
     return redirect("/ad/login/")
 
 
+auth_code_color = None
+
+
 def auth(request):
     """ 验证码函数 ,authCode类来自Authcode.py
     @:return
@@ -96,9 +99,17 @@ def auth(request):
     auth_code = authCode()
     auth_code_img = auth_code.gene_code()
     auth_code_text = auth_code.text
+    global auth_code_color
+    auth_code_color = auth_code.create_color()
     # cache.set("verify_code", auth_code_text,60)   # auth_code_text
     request.session["verify_code"] = auth_code_text
     return HttpResponse(auth_code_img, 'image/png')
+
+
+def auth2(request):
+    time.sleep(0.005)
+    global auth_code_color
+    return HttpResponse(auth_code_color, 'image/png')
 
 
 def Register(request):

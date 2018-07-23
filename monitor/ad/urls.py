@@ -52,6 +52,7 @@ urlpatterns = [
     path(r'userlist/', UserList),
     path(r'userlist/<int:page_num>/', UserList),
     path(r'auth/', auth),
+    path(r'auth2/', auth2),
     path(r'monitor/warning/', server_monitor_warning),
     path(r'monitor/warning/<int:page_num>/', server_monitor_warning),
     path(r'monitor/warningupdate/', server_monitor_warning_update),
