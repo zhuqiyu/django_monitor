@@ -3,7 +3,7 @@
 {% block content %}
 
 <h2 style='position:relative;left:3%'>报警规则</h2>
-	<form action='/ad/monitor/warningupdate/' method='POST'>{% csrf_token %}
+	<form action="/ad/monitor/warningupdate/{{page_num|safe}}/" method='POST'>{% csrf_token %}
 		<table style='position:relative;left:8%;top:10px;bottom:50px' border='1'>
 			<th style="width:35px">
 				<td style="width:100px">告警名</td>
@@ -20,7 +20,7 @@
 	</form>
 			{% for item in data%}
 			
-			<form action='/ad/monitor/warningupdate/' method='POST'>{% csrf_token %}
+			<form action="/ad/monitor/warningupdate/{{page_num|safe}}/" method='POST'>{% csrf_token %}
 			<table style='position:relative;left:8%;top:10px;bottom:50px' border='1'>
 			<tr name="RuleIndextable" >
 				<td style="width:35px"><input name="id" value="{{item.id}}" readonly="readonly" style="width:35px;border:0px"></input></td>
@@ -79,17 +79,17 @@
 <table style='position:relative;left:8%;top:0px;bottom:50px' >
 				<tr name="new_asset_table">
 				<td></td>
-				<td>{{form2.name}}</td>
-				<td><select name="triggers" style="margin-top: 5px">
+				<td >{{form2.name}}</td>
+				<td><select name="triggers" style="margin-top:5px">
 					{% for i in form %}
 					<option  value="{{i.id}}">{{i.name}}</option>
 					{% endfor  %}
 				</select></td>
-				<td>{{form2.time}}</td>
-				<td>{{form2.triggers_times}}</td>
-				<td>{{form2.triggers_diff}}</td>
+				<td >{{form2.time}}</td>
+				<td >{{form2.triggers_times}}</td>
+				<td >{{form2.triggers_diff}}</td>
 				<td>{{form2.triggers_value}}</td>
-				<td><input type='submit' value='新增'/></td>
+				<td ><input type='submit' value='新增' /></td>
 			</tr>
 </table>
 </form>	
