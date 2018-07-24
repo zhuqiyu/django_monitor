@@ -20,8 +20,8 @@ class authCode(object):
 
     def __init__(self):
 
-        # 字体的位置，不同版本的系统会有不同
-        self.font_path = os.path.join(settings.STATICFILES_DIRS[0], "fonts\\arial.ttf")
+        # 字体的位置，不同版本的系统会有不同,字体为微软雅黑
+        self.font_path = os.path.join(settings.STATICFILES_DIRS[0], "fonts/MSYH.TTC")
         # print font_path
         # 生成几位数的验证码
         self.number = 4

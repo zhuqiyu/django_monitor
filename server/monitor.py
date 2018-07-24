@@ -118,15 +118,4 @@ if __name__ == "__main__":
     finally:
         curs.close()
         conn.close()
-'''
-print 'cpu使用率：%f%%'  % vcc_pc.cpupercent
-print vcc_pc.diskpercent
-print vcc_pc.disksize
 
-#print psutil.disk_io_counters(perdisk=True)
-#print vcc_pc.inode
-print '磁盘读统计',vcc_pc.readcount
-print '磁盘写统计',vcc_pc.writecount
-#print psutil.net_io_counters(pernic=True)
-print vcc_pc.sentbyte
-'''
