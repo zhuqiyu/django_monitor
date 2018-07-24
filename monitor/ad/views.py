@@ -654,6 +654,9 @@ def server_monitor_message(request, u_id):
         host_list = []
         temp_warning_status = 0
         rule_index_switch = rule_index.switch
+        rule_index_name_choice = ("ping", "cpupercent", "mempercent", "inode",
+                                  "diskpercent", "IOPS", "sentbyte",
+                                  "connections", "recvbyte", "LISTEN")
         for item in hosts:
             host_list.append(item.hostname)
             hostname = item.hostname
@@ -673,9 +676,6 @@ def server_monitor_message(request, u_id):
             else:
                 # print(triggers_times, triggers_diff, triggers_value)
                 # print(type(triggers_times), type(triggers_diff), type(triggers_value))
-                rule_index_name_choice = ("ping", "cpupercent", "mempercent", "inode",
-                                          "diskpercent", "IOPS", "sentbyte",
-                                          "connections", "recvbyte", "LISTEN")
                 temp_warning_rule_name = rule_index_name_choice[rule_index_name]
                 # 服务器宕机检测
                 if temp_warning_rule_name == 'ping':
