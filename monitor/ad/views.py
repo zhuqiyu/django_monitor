@@ -638,7 +638,7 @@ def server_monitor_warning_update(request):
 
 
 def server_monitor_message(request, u_id):
-    if request.META.get("REMOTE_ADDR", None) != "192.168.115.20":
+    if request.META.get("REMOTE_ADDR", None) not in ("192.168.115.20", "192.168.115.21"):
         return HttpResponse(status=444)
     try:
         rule_index = RuleIndex.objects.get(id=u_id)
