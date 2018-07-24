@@ -634,7 +634,7 @@ def server_monitor_warning_update(request, page_num=1):
             obj.save()
         except Exception as e:
             print(e)
-    return redirect("/ad/monitor/warning/%d/", page_num)
+    return redirect("/ad/monitor/warning/%d/" % page_num)
 
 
 def server_monitor_message(request, u_id):
