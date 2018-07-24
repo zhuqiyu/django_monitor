@@ -613,7 +613,7 @@ def server_monitor_warning(request, page_num=1):
                                             'status': result})
 
 
-def server_monitor_warning_update(request):
+def server_monitor_warning_update(request, page_num=1):
     """启用/停止 告警规则"""
     if not request.session.get('username', None):
         return redirect('/ad/login/')
@@ -634,7 +634,7 @@ def server_monitor_warning_update(request):
             obj.save()
         except Exception as e:
             print(e)
-    return redirect("/ad/monitor/warning/")
+    return redirect("/ad/monitor/warning/%d/", page_num)
 
 
 def server_monitor_message(request, u_id):

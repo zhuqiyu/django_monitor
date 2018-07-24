@@ -56,6 +56,7 @@ urlpatterns = [
     path(r'monitor/warning/', server_monitor_warning),
     path(r'monitor/warning/<int:page_num>/', server_monitor_warning),
     path(r'monitor/warningupdate/', server_monitor_warning_update),
+    path(r'monitor/warningupdate/<int:page_num>/', server_monitor_warning_update),
     path(r'monitor/hostgroup/', server_monitor_hostgroup),
     path(r'monitor/hostgroup/<int:page_num>/', server_monitor_hostgroup),
     path(r'monitor1/', server_monitor_host),
