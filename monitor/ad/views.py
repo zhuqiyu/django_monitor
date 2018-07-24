@@ -685,7 +685,7 @@ def server_monitor_message(request, u_id):
                         tn = telnetlib.Telnet(item.ip, '22', timeout=5)
                         tn.close()
                         # 无告警/告警恢复
-                        warning_recover(rule_index, triggers_times, rule_index_name_choice)
+                        # warning_recover(rule_index, triggers_times, rule_index_name_choice)
                         continue
                     except Exception:
                         temp_warning_status += 1
@@ -710,7 +710,8 @@ def server_monitor_message(request, u_id):
                         break
                     else:
                         # 无告警/告警恢复
-                        warning_recover(rule_index, triggers_times, rule_index_name_choice)
+                        # warning_recover(rule_index, triggers_times, rule_index_name_choice)
+                        continue
                 elif type(result_data) is dict:
                     # 多性能指标参数监控 如: 磁盘 网卡
                     for k in result_data:
@@ -736,7 +737,8 @@ def server_monitor_message(request, u_id):
                             break
                         else:
                             # 无告警/告警恢复
-                            warning_recover(rule_index, triggers_times, rule_index_name_choice)
+                            # warning_recover(rule_index, triggers_times, rule_index_name_choice)
+                            continue
                 elif type(result_data) is list and temp_warning_rule_name == "LISTEN":
                     # 端口检查
                     addr_and_port = "0.0.0.0:" + str(triggers_value)
@@ -749,9 +751,12 @@ def server_monitor_message(request, u_id):
                         break
                     else:
                         # 无告警/告警恢复
-                        warning_recover(rule_index, triggers_times, rule_index_name_choice)
+                        # warning_recover(rule_index, triggers_times, rule_index_name_choice)
+                        continue
                 else:
                     print("其他")
+        if temp_warning_status == 0:
+            warning_recover(rule_index, triggers_times, rule_index_name_choice)
         # 调用rule_index数据库保存函数
         rule_index_save(temp_warning_status, rule_index, triggers_times)
         return render(request, "message.html",
