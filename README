@@ -60,3 +60,4 @@ yum install sysstat
 vim monitor.py
 python monitor.py
 
+效果图见 index_img/ 目录
