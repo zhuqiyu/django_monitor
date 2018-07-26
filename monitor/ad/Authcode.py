@@ -42,7 +42,8 @@ class authCode(object):
             self.color = u'蓝色'
             self.fontcolor = self.fontcolor_list[temp_int]
         # 干扰线颜色。默认为红色
-        self.linecolor = (255, 0, 0)
+        self.linecolor_list = [(255, 0, 255), (255, 255, 0), (144, 238, 144)]
+        self.linecolor = self.linecolor_list[temp_int]
         # 是否要加入干扰线
         self.draw_line = True
         # 加入干扰线条数的上下限
@@ -52,23 +53,22 @@ class authCode(object):
         # source = list(string.ascii_lowercase+'1234567890')
         self.source = list('1234567890')
 
-
     def gene_text(self):
         #     return '6666'
         return ''.join(random.sample(self.source, self.number))  # number是生成验证码的位数
 
-
     # 用来绘制干扰线
-    def gene_line(self, draw, width, height):
-        width, height = self.size  # 宽和高
+    def gene_line(self):
+        width = 38  # 宽和高
+        height = 30
         print(type(self.font_path))
         print(self.font_path)
         font = ImageFont.truetype(self.font_path, 25)  # 验证码的字体
         draw = ImageDraw.Draw(self.image)  # 创建画笔
-        text = ''.join(random.sample(self.source, 2))  # 生成字符串
+        text = ''.join(random.sample(self.source, 3))  # 生成字符串
         font_width, font_height = font.getsize(text)
-        draw.text(((width - font_width) / 5, (height - font_height) / 5), text,
-                  font=font, fill=(255, 0, 0))  # 填充字符串
+        draw.text(((width - font_width) / 10, (height - font_height) / 10), text,
+                  font=font, fill=self.linecolor)  # 填充字符串
 
     # 生成颜色图片
     def create_color(self):
@@ -97,7 +97,7 @@ class authCode(object):
         draw.text(((width - font_width) / self.number, (height - font_height) / self.number), self.text,
                   font=font, fill=self.fontcolor)  # 填充字符串
         if self.draw_line:
-            self.gene_line(draw, width, height)
+            self.gene_line()
         self.image = self.image.transform((width + 20, height + 10), Image.AFFINE, (1, -0.3, 0, -0.1, 1, 0), Image.BILINEAR)  # 创建扭曲
         self.image = self.image.filter(ImageFilter.EDGE_ENHANCE_MORE)  # 滤镜，边界加强
     #image_file = text + '.png'

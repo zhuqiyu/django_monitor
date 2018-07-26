@@ -3,7 +3,11 @@
   <component name="ChangeListManager">
     <list default="true" id="ead116c5-07d5-4f47-a8b1-7ea404cbf01c" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README" beforeDir="false" afterPath="$PROJECT_DIR$/README" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/monitor/ad/Authcode.py" beforeDir="false" afterPath="$PROJECT_DIR$/monitor/ad/Authcode.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/monitor/ad/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/monitor/ad/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/monitor/ad/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/monitor/ad/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/monitor.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/monitor.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -17,8 +21,50 @@
       <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/monitor/ad/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-863">
-              <caret line="677" column="88" selection-start-line="677" selection-start-column="88" selection-end-line="677" selection-end-column="88" />
+            <state relative-caret-position="327">
+              <caret line="850" column="8" selection-start-line="850" selection-start-column="8" selection-end-line="850" selection-end-column="8" />
+              <folding>
+                <element signature="e#24#63#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="monitor_check.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/server/monitor_check.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="361">
+              <caret line="20" column="20" selection-start-line="20" selection-start-column="16" selection-end-line="20" selection-end-column="20" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="monitor.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/server/monitor.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="398">
+              <caret line="119" column="8" lean-forward="true" selection-start-line="119" selection-start-column="8" selection-end-line="119" selection-end-column="8" />
+              <folding>
+                <element signature="e#36#49#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="README" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/README">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="441">
+              <caret line="52" column="17" selection-start-line="52" selection-start-column="4" selection-end-line="52" selection-end-column="17" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="models.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/monitor/ad/models.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="817">
+              <caret line="43" column="15" selection-start-line="43" selection-start-column="15" selection-end-line="43" selection-end-column="15" />
               <folding>
                 <element signature="e#24#63#0" expanded="true" />
               </folding>
@@ -29,7 +75,7 @@
       <file leaf-file-name="urls.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/monitor/ad/urls.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="553">
+            <state relative-caret-position="1007">
               <caret line="58" column="48" selection-start-line="58" selection-start-column="48" selection-end-line="58" selection-end-column="48" />
             </state>
           </provider>
@@ -38,8 +84,8 @@
       <file leaf-file-name="Authcode.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/monitor/ad/Authcode.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="852">
-              <caret line="93" column="43" selection-start-line="93" selection-start-column="43" selection-end-line="93" selection-end-column="43" />
+            <state relative-caret-position="589">
+              <caret line="44" column="57" selection-start-line="44" selection-start-column="57" selection-end-line="44" selection-end-column="57" />
             </state>
           </provider>
         </entry>
@@ -114,18 +160,20 @@
         <option value="$PROJECT_DIR$/server/crontab" />
         <option value="$PROJECT_DIR$/client/crontab" />
         <option value="$PROJECT_DIR$/monitor/ad/templatetags/oldboy.py" />
-        <option value="$PROJECT_DIR$/monitor/ad/models.py" />
-        <option value="$PROJECT_DIR$/README" />
         <option value="$PROJECT_DIR$/monitor/monitor/settings.py" />
         <option value="$PROJECT_DIR$/monitor/ad/forms.py" />
         <option value="F:/../monitor (2).py" />
         <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/monitor/ad/urls.py" />
+        <option value="$PROJECT_DIR$/monitor/ad/Authcode.py" />
+        <option value="$PROJECT_DIR$/README" />
+        <option value="$PROJECT_DIR$/monitor/ad/models.py" />
+        <option value="$PROJECT_DIR$/server/monitor.py" />
         <option value="$PROJECT_DIR$/monitor/ad/views.py" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds" extendedState="7">
     <option name="x" value="520" />
     <option name="width" value="1400" />
     <option name="height" value="1000" />
@@ -160,6 +208,11 @@
               <item name="django_monitor" type="462c0819:PsiDirectoryNode" />
               <item name="monitor" type="462c0819:PsiDirectoryNode" />
               <item name="static" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="django_monitor" type="b2602c69:ProjectViewProjectNode" />
+              <item name="django_monitor" type="462c0819:PsiDirectoryNode" />
+              <item name="server" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -281,13 +334,14 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.14635417" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.14635417" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.503125" side_tool="true" weight="0.32944915" />
       <window_info anchor="bottom" id="Version Control" order="9" />
       <window_info anchor="bottom" id="Python Console" order="7" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49791667" weight="0.30106384" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.49791667" visible="true" weight="0.30106384" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="Terminal" order="8" />
       <window_info id="Favorites" order="2" side_tool="true" />
@@ -331,13 +385,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/monitor/templates/login.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1008">
-          <caret line="48" column="103" selection-start-line="48" selection-start-column="103" selection-end-line="48" selection-end-column="103" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://C:/Python35/Lib/site-packages/MySQLdb/cursors.py" />
     <entry file="file://C:/Python35/Lib/site-packages/django/db/models/fields/related_descriptors.py" />
     <entry file="file://C:/Python35/Lib/site-packages/django/forms/boundfield.py" />
@@ -373,9 +420,6 @@
       </provider>
     </entry>
     <entry file="file://C:/Python35/Lib/site-packages/django/http/request.py" />
-    <entry file="file://$PROJECT_DIR$/server/monitor_check.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://C:/Python35/Lib/site-packages/django/core/handlers/base.py" />
     <entry file="file://$PROJECT_DIR$/server/crontab">
       <provider selected="true" editor-type-id="text-editor">
@@ -421,13 +465,6 @@
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file://F:/../monitor (2).py" />
-    <entry file="file://$PROJECT_DIR$/README">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="593">
-          <caret line="37" column="55" selection-start-line="37" selection-start-column="46" selection-end-line="37" selection-end-column="55" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/monitor/manage.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="133">
@@ -449,16 +486,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/monitor/ad/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="852">
-          <caret line="54" column="13" selection-start-line="54" selection-start-column="4" selection-end-line="54" selection-end-column="13" />
-          <folding>
-            <element signature="e#24#63#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/monitor/monitor/urls.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="399">
@@ -476,24 +503,58 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/monitor/ad/Authcode.py">
+    <entry file="file://$PROJECT_DIR$/monitor/ad/urls.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="852">
-          <caret line="93" column="43" selection-start-line="93" selection-start-column="43" selection-end-line="93" selection-end-column="43" />
+        <state relative-caret-position="1007">
+          <caret line="58" column="48" selection-start-line="58" selection-start-column="48" selection-end-line="58" selection-end-column="48" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/monitor/ad/urls.py">
+    <entry file="file://$PROJECT_DIR$/monitor/ad/Authcode.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="553">
-          <caret line="58" column="48" selection-start-line="58" selection-start-column="48" selection-end-line="58" selection-end-column="48" />
+        <state relative-caret-position="589">
+          <caret line="44" column="57" selection-start-line="44" selection-start-column="57" selection-end-line="44" selection-end-column="57" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/README">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="441">
+          <caret line="52" column="17" selection-start-line="52" selection-start-column="4" selection-end-line="52" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/monitor/ad/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="817">
+          <caret line="43" column="15" selection-start-line="43" selection-start-column="15" selection-end-line="43" selection-end-column="15" />
+          <folding>
+            <element signature="e#24#63#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/server/monitor_check.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="361">
+          <caret line="20" column="20" selection-start-line="20" selection-start-column="16" selection-end-line="20" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/server/monitor.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="398">
+          <caret line="119" column="8" lean-forward="true" selection-start-line="119" selection-start-column="8" selection-end-line="119" selection-end-column="8" />
+          <folding>
+            <element signature="e#36#49#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/monitor/ad/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-863">
-          <caret line="677" column="88" selection-start-line="677" selection-start-column="88" selection-end-line="677" selection-end-column="88" />
+        <state relative-caret-position="327">
+          <caret line="850" column="8" selection-start-line="850" selection-start-column="8" selection-end-line="850" selection-end-column="8" />
           <folding>
             <element signature="e#24#63#0" expanded="true" />
           </folding>

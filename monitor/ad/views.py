@@ -107,7 +107,7 @@ def auth(request):
 
 
 def auth2(request):
-    time.sleep(0.005)
+    time.sleep(0.01)
     global auth_code_color
     return HttpResponse(auth_code_color, 'image/png')
 
@@ -156,87 +156,6 @@ def Register(request):
             result = '无效的用户名/密码'
     return render(request, 'register.html',
                   {'form': registerForm, 'status': result})
-
-
-def AssetUpdate(request):
-    """
-    资产配置修改
-    :request: user login
-    :return: httpresponse('ok')
-    """
-    if not request.session.get('username', 0):
-        return redirect('/ad/login/')
-    if request.method == 'POST':
-        # print request.POST.get('data')
-        Hostname = request.POST.get('hostname', None)
-        Ip = request.POST.get('ip', None)
-        Id = request.POST.get('id', None)
-        # is_empty = all([Hostname,Ip])
-        # print Id,Ip,Hostname
-        if Hostname and Ip:
-            print('Hostname', Hostname)
-            print('ip', Ip)
-            obj = Asset.objects.get(id=Id)
-            obj.hostname = Hostname
-            obj.ip = Ip
-            try:
-                obj.save()
-                print("ok")
-            except Exception as e:
-                logging.error(e)
-                return HttpResponse("主机名或ip不能相同")
-            return HttpResponse('ok')
-        else:
-            return HttpResponse('ip或主机名不能为空')
-        return render(request, 'assetlist.html')
-#         elif Ip:
-#             print 'Ip',Ip
-#             obj = Asset.objects.get(id=Id)
-#             obj.ip = Ip
-#             obj.save()
-#             return HttpResponse('ok')
-    else:
-        return HttpResponse('404')
-
-
-def UserUpdate(request):
-    """
-    用户信息升级
-    :param request: user login
-    :return:200
-    """
-    if not request.session.get('username', 0):
-        return redirect('/ad/login/')
-    if request.method == 'POST':
-        # print request.POST.get('data')
-        name = request.POST.get('Name', None)
-        email = request.POST.get('Email', None)
-        if '@' not in email:
-            return HttpResponse('邮箱信息错误')
-            exit(0)
-        u_id = request.POST.get('Id', None)
-        memo = request.POST.get('Memo', None)
-        # is_empty = all([Hostname,Ip])
-        # print name,email,id,memo
-        is_empty = all([name, email, u_id, memo])
-        if is_empty:
-            print('name', name)
-            print('email', email)
-            # noinspection PyBroadException
-            try:
-                obj = UserInfo.objects.get(id=u_id)
-                obj.email = email
-                obj.name = name
-                obj.memo = memo
-                obj.save()
-            except Exception as e:
-                return HttpResponse(0)
-                print(e)
-            return HttpResponse(200)
-        else:
-            return HttpResponse(0)
-    else:
-        return HttpResponse('404')
 
 
 def AssetList(request, page_num=1):
@@ -299,6 +218,47 @@ def AssetList(request, page_num=1):
                        'status': result})
 
 
+def AssetUpdate(request):
+    """
+    资产配置修改
+    :request: user login
+    :return: httpresponse('ok')
+    """
+    if not request.session.get('username', 0):
+        return redirect('/ad/login/')
+    if request.method == 'POST':
+        # print request.POST.get('data')
+        Hostname = request.POST.get('hostname', None)
+        Ip = request.POST.get('ip', None)
+        Id = request.POST.get('id', None)
+        # is_empty = all([Hostname,Ip])
+        # print Id,Ip,Hostname
+        if Hostname and Ip:
+            print('Hostname', Hostname)
+            print('ip', Ip)
+            obj = Asset.objects.get(id=Id)
+            obj.hostname = Hostname
+            obj.ip = Ip
+            try:
+                obj.save()
+                print("ok")
+            except Exception as e:
+                logging.error(e)
+                return HttpResponse("主机名或ip不能相同")
+            return HttpResponse('ok')
+        else:
+            return HttpResponse('ip或主机名不能为空')
+        return render(request, 'assetlist.html')
+    #         elif Ip:
+    #             print 'Ip',Ip
+    #             obj = Asset.objects.get(id=Id)
+    #             obj.ip = Ip
+    #             obj.save()
+    #             return HttpResponse('ok')
+    else:
+        return HttpResponse('404')
+
+
 def UserList(request, page_num=1):
     """
 
@@ -328,6 +288,46 @@ def UserList(request, page_num=1):
     return render(request, 'userlist.html',
                   {'data': page_content, "down_page": down_page,
                    "up_page": up_page, "page_num": page_num, 'list': user_list_name})
+
+
+def UserUpdate(request):
+    """
+    用户信息升级
+    :param request: user login
+    :return:200
+    """
+    if not request.session.get('username', 0):
+        return redirect('/ad/login/')
+    if request.method == 'POST':
+        # print request.POST.get('data')
+        name = request.POST.get('Name', None)
+        email = request.POST.get('Email', None)
+        if '@' not in email:
+            return HttpResponse('邮箱信息错误')
+            exit(0)
+        u_id = request.POST.get('Id', None)
+        memo = request.POST.get('Memo', None)
+        # is_empty = all([Hostname,Ip])
+        # print name,email,id,memo
+        is_empty = all([name, email, u_id, memo])
+        if is_empty:
+            print('name', name)
+            print('email', email)
+            # noinspection PyBroadException
+            try:
+                obj = UserInfo.objects.get(id=u_id)
+                obj.email = email
+                obj.name = name
+                obj.memo = memo
+                obj.save()
+            except Exception as e:
+                return HttpResponse(0)
+                print(e)
+            return HttpResponse(200)
+        else:
+            return HttpResponse(0)
+    else:
+        return HttpResponse('404')
 
 
 def server_monitor(request, name):

@@ -39,7 +39,7 @@ class UserGroup(models.Model):
 class Asset(models.Model):
     hostname = models.CharField(max_length=30, unique=True)
     ip = models.GenericIPAddressField(unique=True)
-    user_group = models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='UserGroup')
+    user_group = models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='UserGroup', default=2)
     create_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
     hostgroup = models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='HostGroup', default=1)

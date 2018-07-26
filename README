@@ -49,8 +49,14 @@ please set this args
 # server
 chmod +x monitor_check.py
 chmod +x monitor.py
+vim monitor.py
+vim monitor_check.py
 cat crontab >> /etc/crontab
 
 # client
 chmod +x monitor.py
+pip install psutil pymysql
+yum install sysstat
+vim monitor.py
+python monitor.py
 
