@@ -330,6 +330,33 @@ def UserUpdate(request):
         return HttpResponse('404')
 
 
+def server_monitor_monitor(request):
+    host = request.get_host().split(":")[0]
+    print(host)
+    if host not in ("127.0.0.1", "192.168.115.21", "192.168.115.1"):
+        return HttpResponse("err")
+    if request.method == 'GET':
+        # 定义变量
+        hostname = request.GET.get("hostname", None)
+        ip = request.GET.get("ip", None)
+        times = request.GET.get("times", None)
+        data = request.GET.get("data", None)
+        user_group = request.GET.get("user_group", 2)
+        hostgroup = request.GET.get("hostgroup", 1)
+        print(times)
+        if not all([hostname, ip, times, data]):
+            return HttpResponse("err")
+        # model
+        asset_db = Asset.objects.filter(hostname=hostname, ip=ip)
+        # 提交每分钟监控数据
+        RuleResult.objects.create(host=hostname, time=times, data=data)
+        # 如果数据库没有这个数据，将主机数据录入进asset表
+        if len(asset_db) < 1:
+            Asset.objects.create(hostname=hostname, ip=ip, user_group_id=user_group, hostgroup_id=hostgroup)
+        return HttpResponse("ook")
+    return HttpResponse("ok")
+
+
 def server_monitor(request, name):
     """
     :前置条件: 用户登录

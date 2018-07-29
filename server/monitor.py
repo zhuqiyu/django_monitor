@@ -2,11 +2,10 @@
 #coding=utf-8
 import psutil
 import os
-import sys
+import pytz
 import datetime
-import pymysql as db
 import json
-
+import curl
 
 class serverconfig(object):
     def __init__(self):
@@ -82,6 +81,9 @@ class serverconfig(object):
         for k in psutil.net_connections():
             if k.status == "LISTEN" and k.laddr.ip != '::':
                 self.LISTEN.append(k.laddr.ip + ':' + str(k.laddr.port))
+        # timezone
+        pytz.country_timezones('cn')
+        tz = pytz.timezone('Asia/Shanghai')
         self.resposetohtml = {"data": {
             'cpupercent': self.cpupercent,
             'load': self.load,
@@ -99,7 +101,7 @@ class serverconfig(object):
         },
             "host": "localhost",     # 必须修改
             "ip": "192.168.115.20",  # 必须修改
-            "time_stamp": datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
+            "time_stamp": datetime.datetime.now(tz).strftime('%Y-%m-%d %H:%M:%S.%f')
             }
 
 
@@ -117,36 +119,11 @@ if __name__ == "__main__":
     user_group = 2
     # 默认1为2核4G主机组
     hostgroup = 1
-    # 时间
-    create_date = update_date = datetime.datetime.now()
-    while _conn_retries_count < 5 and _conn_status:
-        try:
-            # 必须修改
-            conn = db.connect(host="192.168.115.20", user="zhuqiyu", passwd="123", db="ad",
-                              charset="utf8", connect_timeout=3)
-            _conn_status = False
-        except Exception as e:
-            _conn_retries_count += 1
-    curs = conn.cursor()
+    # 初始化
+    curl_check = curl.Curl()
     try:
-        curs.execute("INSERT INTO ad.ad_ruleresult(data,host,time) VALUES(%s,%s,%s);",
-                     (data, host, time_stamp))
-        curs.execute("select count(1) from ad.ad_asset where hostname = %s and ip = %s",
-                     (hostname, ip))
-        num = curs.fetchall()[0][0]
-        print(num, type(num))
-        if num < 1:
-            print("ok")
-            curs.execute(
-                "INSERT INTO ad_asset(hostname,ip,user_group_id,hostgroup_id,create_date,update_date)\
-                 VALUES(%s,%s,%s,%s,%s,%s);",
-                (hostname, ip, user_group, hostgroup, create_date, update_date))
-        conn.commit()
-        print("success", data)
+        curl_check.get(url="http://192.168.115.1:8000/ad/monitor/monitor/",
+                       params={"hostname": host, "ip": ip, "times": time_stamp, "data": data,
+                               "user_group": user_group, "hostgroup": hostgroup})
     except Exception as e:
-        conn.rollback()
-        print("fail", data)
-    finally:
-        curs.close()
-        conn.close()
-
+        print("err", e)
