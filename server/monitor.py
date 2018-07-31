@@ -5,7 +5,8 @@ import os
 import pytz
 import datetime
 import json
-import curl
+import requests
+from bs4 import BeautifulSoup
 
 class serverconfig(object):
     def __init__(self):
@@ -120,10 +121,17 @@ if __name__ == "__main__":
     # 默认1为2核4G主机组
     hostgroup = 1
     # 初始化
-    curl_check = curl.Curl()
+    r = requests.get(url="http://192.168.115.1:8000/ad/monitor/monitor/")
+    soup = BeautifulSoup(r.text, "html.parser")
+    csrfmiddlewaretoken = soup.input.get("value")
+    csrftoken = r.cookies.get("csrftoken")
+    cookies = {'csrftoken': csrftoken}
     try:
-        curl_check.get(url="http://192.168.115.1:8000/ad/monitor/monitor/",
-                       params={"hostname": host, "ip": ip, "times": time_stamp, "data": data,
-                               "user_group": user_group, "hostgroup": hostgroup})
+        a = requests.post(url="http://192.168.115.1:8000/ad/monitor/monitor/",
+                          data={"hostname": hostname, "ip": ip, "times": time_stamp, "data": data,
+                                "user_group": user_group, "hostgroup": hostgroup,
+                                'csrfmiddlewaretoken': csrfmiddlewaretoken},
+                          cookies=cookies)
     except Exception as e:
         print("err", e)
+

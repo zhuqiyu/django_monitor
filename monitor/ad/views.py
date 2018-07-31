@@ -39,13 +39,13 @@ def login(request):
         pwd = request.POST.get('password', None).encode("utf-8")
         # pwd_md5 = request.POST.get('', None)
         acode = request.POST.get('auth_code_client', None)
-        is_empty = all([user, pwd, acode, request.session["verify_code"]])
-        print(user, pwd, acode, request.session["verify_code"])
+        is_empty = all([user, pwd, acode, request.session.get("verify_code", None)])
+        print(is_empty)
         print(request)
 
-        if is_empty is False:
+        if not is_empty:
             result = '用户名/密码不能为空'
-            return render(request, 'login.html', result)
+            return render(request, 'login.html', {'status': result})
         elif acode == request.session["verify_code"]:
             salt = UserInfo.objects.get(name=user).salt.value
             # salt = Salt.objects.filter(id=salt_id)[0].value
@@ -334,15 +334,15 @@ def server_monitor_monitor(request):
     host = request.get_host().split(":")[0]
     print(host)
     if host not in ("127.0.0.1", "192.168.115.21", "192.168.115.1"):
-        return HttpResponse("err")
-    if request.method == 'GET':
+        return HttpResponse(status=404)
+    if request.method == 'POST':
         # 定义变量
-        hostname = request.GET.get("hostname", None)
-        ip = request.GET.get("ip", None)
-        times = request.GET.get("times", None)
-        data = request.GET.get("data", None)
-        user_group = request.GET.get("user_group", 2)
-        hostgroup = request.GET.get("hostgroup", 1)
+        hostname = request.POST.get("hostname", None)
+        ip = request.POST.get("ip", None)
+        times = request.POST.get("times", None)
+        data = request.POST.get("data", None)
+        user_group = request.POST.get("user_group", 2)
+        hostgroup = request.POST.get("hostgroup", 1)
         print(times)
         if not all([hostname, ip, times, data]):
             return HttpResponse("err")
@@ -354,7 +354,9 @@ def server_monitor_monitor(request):
         if len(asset_db) < 1:
             Asset.objects.create(hostname=hostname, ip=ip, user_group_id=user_group, hostgroup_id=hostgroup)
         return HttpResponse("ook")
-    return HttpResponse("ok")
+    else:
+        data = {}
+        return render(request, "monitor_monitor.html", {'data': data})
 
 
 def server_monitor(request, name):
