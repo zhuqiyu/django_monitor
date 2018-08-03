@@ -9,6 +9,7 @@ from .models import (UserInfo, Salt, UserGroup, Asset, HostGroup,
 
 from .forms import RegisterForm, AssetListForm, RuleIndexForm
 from django.http.response import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 from .Authcode import authCode
 import logging
 import json
@@ -330,6 +331,7 @@ def UserUpdate(request):
         return HttpResponse('404')
 
 
+@csrf_exempt
 def server_monitor_monitor(request):
     host = request.get_host().split(":")[0]
     print(host)
@@ -410,7 +412,7 @@ def server_monitor(request, name):
         return redirect("/ad/monitor/hostgroup/")
 
 
-def server_monitor_host(request):
+def server_monitor_host(request, page_num=1):
     """
     从Asset表(主机表)中取出所有主机,
     去RuleResult表(监控结果表)取出每个主机对应的最新数据.
@@ -449,7 +451,20 @@ def server_monitor_host(request):
                         item_data['disk'] = temp_disk_percent
                         print(temp_disk_percent)
                 data1.append(item_data)
-            return render(request, "monitor_host.html", {"data": data1})
+            # 调用分页函数
+            default_size = request.GET.get("default_size", 10)
+            pagination_value = pagination(table_queryset=data1,
+                                          page_num=page_num, default_size=default_size)
+            if not pagination_value:
+                return HttpResponse("please input valid page number")
+            else:
+                down_page, up_page, page_min, page_value, page_total = pagination_value
+            try:
+                page_content = data1[page_min:page_value]
+            except Exception as err:
+                print(err)
+            return render(request, "monitor_host.html", {"data": page_content, "down_page": down_page,
+                                                         "up_page": up_page, "page_num": page_num})
         return HttpResponse("无监控数据")
     except Exception as e:
         logging.error("RuleResult", e)

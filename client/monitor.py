@@ -2,11 +2,11 @@
 #coding=utf-8
 import psutil
 import os
-import sys
+import pytz
 import datetime
-import pymysql as db
 import json
-
+import requests
+from bs4 import BeautifulSoup
 
 class serverconfig(object):
     def __init__(self):
@@ -17,7 +17,7 @@ class serverconfig(object):
         self.systime = psutil.cpu_times().system
         self.idletime = psutil.cpu_times().idle
         self.cputotal = self.idletime + self.systime + self.usertime
-        self.cpupercent = round((1-self.idletime/self.cputotal)*100,2  )
+        self.cpupercent = round((1-self.idletime/self.cputotal)*100, 2)
         # mem parameter
         self.mem = psutil.virtual_memory()
         self.memtotal = psutil.virtual_memory().total/1024/1024
@@ -39,14 +39,16 @@ class serverconfig(object):
                 self.diskpercent[i[0]] = psutil.disk_usage(i[1])[-1]
                 self.disksize[i[0]]    = round(psutil.disk_usage(i[1])[0]/1024/1024/1024.0, 3)
                 if self.system != 'win32':
-                    self.inode[i[0]] = os.popen("""df -ih %s |tail -1|awk '{print $(NF-1)}'""" % i[0] ).read().strip('\n')
+                    self.inode[i[0]] = os.popen("""df -ih %s |tail -1|awk '{print $(NF-1)}'"""
+                                                % i[0]).read().strip('\n')
         for i in psutil.disk_io_counters(perdisk=True):
             if 'dm' not in i:
                 psutil.disk_io_counters.cache_clear()
                 self.readcount[i] = psutil.disk_io_counters(perdisk=True)[i][0]
                 self.writecount[i] = psutil.disk_io_counters(perdisk=True)[i][1]
         temp_io_num = int(os.popen("""iostat -x -d -k|grep -c d[a-f]""").read().strip('\n'))
-        temp_io = os.popen("""iostat -x -d -k 1 2|awk '/d[a-f]/{print $1,$4+$5}'|sed -n '%d,$P'""" % (temp_io_num + 1))
+        temp_io = os.popen("""iostat -x -d -k 1 2|awk '/d[a-f]/{print $1,$4+$5}'|sed -n '%d,$P'"""
+                           % (temp_io_num + 1))
         for item in temp_io:
             item = item.strip('\n').split(" ")
             self.IOPS[item[0]] = item[1]
@@ -64,7 +66,8 @@ class serverconfig(object):
             self.recvbyte[i] = psutil.net_io_counters(pernic=True)[i][1]
         # network connections
         self.connections = dict()
-        status_list = ["LISTEN","ESTABLISHED","TIME_WAIT","CLOSE_WAIT","LAST_ACK","SYN_SENT"]
+        status_list = ["LISTEN", "ESTABLISHED", "TIME_WAIT",
+                       "CLOSE_WAIT", "LAST_ACK", "SYN_SENT"]
         status_temp = []
         net_connections = psutil.net_connections()
         net_total = 0
@@ -74,22 +77,32 @@ class serverconfig(object):
             self.connections[status] = status_temp.count(status)
             net_total += status_temp.count(status)
         self.connections["TOTAL"] = net_total
+        # network listen
+        self.LISTEN = []
+        for k in psutil.net_connections():
+            if k.status == "LISTEN" and k.laddr.ip != '::':
+                self.LISTEN.append(k.laddr.ip + ':' + str(k.laddr.port))
+        # timezone
+        pytz.country_timezones('cn')
+        tz = pytz.timezone('Asia/Shanghai')
         self.resposetohtml = {"data": {
-            'cpupercent':self.cpupercent,
-            'load':self.load,
-            'mempercent':self.mempercent,
-            'diskpercent':self.diskpercent,
-            'inode':self.inode,
-            'disksize':self.disksize,
-            'readcount':self.readcount,
-            'writecount':self.writecount,
-            'IOPS':self.IOPS,
-            'sentbyte':self.sentbyte,
-            'recvbyte':self.recvbyte,
-            'connections':self.connections,
-            },
-            "host":"localhost",
-            "time_stamp":datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
+            'cpupercent': self.cpupercent,
+            'load': self.load,
+            'mempercent': self.mempercent,
+            'diskpercent': self.diskpercent,
+            'inode': self.inode,
+            'disksize': self.disksize,
+            'readcount': self.readcount,
+            'writecount': self.writecount,
+            'IOPS': self.IOPS,
+            'sentbyte': self.sentbyte,
+            'recvbyte': self.recvbyte,
+            'connections': self.connections,
+            'LISTEN': self.LISTEN,
+        },
+            "host": "localhost",     # 必须修改
+            "ip": "192.168.115.20",  # 必须修改
+            "time_stamp": datetime.datetime.now(tz).strftime('%Y-%m-%d %H:%M:%S.%f')
             }
 
 
@@ -100,33 +113,25 @@ if __name__ == "__main__":
     data = json.dumps(vcc_pc.resposetohtml.get("data", None))
     host = vcc_pc.resposetohtml.get("host", None)
     time_stamp = vcc_pc.resposetohtml.get("time_stamp", None)
-    while _conn_retries_count < 5 and _conn_status:
-        try:
-            conn = db.connect(host="192.168.115.20", user="zhuqiyu", passwd="123", db="ad",\
-                              charset="utf8", connect_timeout=3)
-            _conn_status = False
-        except Exception as e:
-            _conn_retries_count += 1
-    curs = conn.cursor()
+    # 主机信息
+    hostname = vcc_pc.resposetohtml["host"]
+    ip = vcc_pc.resposetohtml["ip"]
+    # 1为管理组，默认2为运维组
+    user_group = 2
+    # 默认1为2核4G主机组
+    hostgroup = 1
+    # 初始化
+    r = requests.get(url="http://192.168.115.1:8000/ad/monitor/monitor/")
+    soup = BeautifulSoup(r.text, "html.parser")
+    csrfmiddlewaretoken = soup.input.get("value")
+    csrftoken = r.cookies.get("csrftoken")
+    cookies = {'csrftoken': csrftoken}
     try:
-        curs.execute("INSERT INTO ad.ad_ruleresult(data,host,time) VALUES(%s,%s,%s);",(data,host,time_stamp))
-        conn.commit()
-        print(data)
+        a = requests.post(url="http://192.168.115.1:8000/ad/monitor/monitor/",
+                          data={"hostname": hostname, "ip": ip, "times": time_stamp, "data": data,
+                                "user_group": user_group, "hostgroup": hostgroup,
+                                'csrfmiddlewaretoken': csrfmiddlewaretoken},
+                          cookies=cookies)
     except Exception as e:
-        conn.rollback()
-        print(data)
-    finally:
-        curs.close()
-        conn.close()
-'''
-print 'cpu使用率：%f%%'  % vcc_pc.cpupercent
-print vcc_pc.diskpercent
-print vcc_pc.disksize
+        print("err", e)
 
-#print psutil.disk_io_counters(perdisk=True)
-#print vcc_pc.inode
-print '磁盘读统计',vcc_pc.readcount
-print '磁盘写统计',vcc_pc.writecount
-#print psutil.net_io_counters(pernic=True)
-print vcc_pc.sentbyte
-'''
