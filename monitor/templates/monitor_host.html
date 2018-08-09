@@ -71,12 +71,33 @@
 
 		<form><table style='position:relative;left:30.8%;top:20px;bottom:50px' border="1px">
 		<tr ><div >
-			<td><select style="height:23px">
-			<option value="10">10</option><option value="20">20</option><option value="50">50</option><option value="100">100</option>
+			<td><select id="default_size" style="height:23px" onchange="javascript:location.href='/ad/monitor1/1/?default_size='+this.value;">
+				{% if default_size == 10 %}
+				<option label="10" value="10" selected="selected">10</option>
+				<option label="20" value="20">20</option>
+				<option label="50" value="50">50</option>
+				<option label="100" value="100">100</option>
+				{% elif default_size == 20 %}
+				<option label="10" value="10" >10</option>
+				<option label="20" value="20" selected="selected">20</option>
+				<option label="50" value="50">50</option>
+				<option label="100" value="100">100</option>
+				{% elif default_size == 50 %}
+				<option label="10" value="10" >10</option>
+				<option label="20" value="20">20</option>
+				<option label="50" value="50" selected="selected">50</option>
+				<option label="100" value="100">100</option>
+				{% elif default_size == 100 %}
+				<option label="10" value="10" >10</option>
+				<option label="20" value="20">20</option>
+				<option label="50" value="50">50</option>
+				<option label="100" value="100" selected="selected">100</option>
+				{% endif %}
 			</select></td>
-			<td><a href="/ad/monitor1/{{up_page}}/">上一页</a></td>
+			<td><a href="javascript:;" name="/ad/monitor1/{{up_page}}/" onclick="javascript:change_page_href(this)">上一页</a></td>
 			<td>&nbsp;<span>{{page_num}}</span>&nbsp;</td>
-			<td><a href="/ad/monitor1/{{down_page}}/">下一页</a></td>
+			<!-- <td><a href="/ad/monitor1/{{down_page}}/">下一页</a></td> -->
+			<td><a href="javascript:;" name="/ad/monitor1/{{down_page}}/" onclick="javascript:change_page_href(this)">下一页</a></td>
 		</div></tr>
 		</table></form>
 		
@@ -85,26 +106,17 @@
 <button id="backtop" style="position:fixed;right:150px;bottom:100px;height:34px;width:34px">Top</button>
 <script type="text/javascript" src="/static/js/jquery-3.2.1.min.js"></script>
 <script type="text/javascript">
-var jishi=document.getElementsByClassName("td-1");
-			//遍历数组，给每个td添加点击事件
-			for(var j=0;j<jishi.length;j++){
-				jishi[j].onclick=function(){
-				//首先要创造个输入框
-				var shuru=document.createElement("input");
-				//给输入框添加类型，因为输入框有很多的类型
-				shuru.type="text";
-				//输入框的内容是本身就有的，获取它的内容，用指针来代替
-				shuru.value=this.innerText;
-				var shuru1=shuru.value
-				//把td的内容清空，然后把新建的节点加给它
-				this.innerHTML="";
-				this.appendChild(shuru);
-				shuru.onblur=function(){
-					shuru.parentNode.innerHTML=shuru.value;
-				}
-				shuru.focus();
-				}
-			}
+
+function change_page_href(obj){
+	var ori_url = obj.name;
+	var page_size = document.getElementById("default_size").value;
+	var last_url = ori_url + '?default_size=' + page_size;
+	obj.href = last_url;
+}
+
+
+
+
 backtop.onclick = function(){
 	document.body.scrollTop = document.documentElement.scrollTop = 0;
 }

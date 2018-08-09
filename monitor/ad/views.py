@@ -452,7 +452,11 @@ def server_monitor_host(request, page_num=1):
                         print(temp_disk_percent)
                 data1.append(item_data)
             # 调用分页函数
-            default_size = request.GET.get("default_size", 10)
+            try:
+                default_size = int(request.GET.get("default_size", 10))
+            except Exception as e:
+                logging.warning("error default size, Not an integer", e)
+                default_size = 10
             pagination_value = pagination(table_queryset=data1,
                                           page_num=page_num, default_size=default_size)
             if not pagination_value:
@@ -464,11 +468,12 @@ def server_monitor_host(request, page_num=1):
             except Exception as err:
                 print(err)
             return render(request, "monitor_host.html", {"data": page_content, "down_page": down_page,
-                                                         "up_page": up_page, "page_num": page_num})
+                                                         "up_page": up_page, "page_num": page_num,
+                                                         "default_size": default_size})
         return HttpResponse("无监控数据")
     except Exception as e:
         logging.error("RuleResult", e)
-        return redirect("/ad/monitor/hostgroup/")
+        return redirect("/ad/monitor1/")
 
 
 def server_monitor_hostgroup(request, page_num=1):
