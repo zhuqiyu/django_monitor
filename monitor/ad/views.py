@@ -48,7 +48,12 @@ def login(request):
             result = '用户名/密码不能为空'
             return render(request, 'login.html', {'status': result})
         elif acode == request.session["verify_code"]:
-            salt = UserInfo.objects.get(name=user).salt.value
+            try:
+                salt = UserInfo.objects.get(name=user).salt.value
+            except Exception as e:
+                print("用户名/密码错误", e)
+                result = '用户名/密码错误'
+                return render(request, 'login.html', {'status': result})
             # salt = Salt.objects.filter(id=salt_id)[0].value
             print("salt_id", salt)
             print(type(salt), salt)
@@ -620,7 +625,7 @@ def server_monitor_warning(request, page_num=1):
     else:
         down_page, up_page, page_min, page_value, page_total = pagination_value
     try:
-        page_content = rule_index[page_min:page_value]
+        page_content = rule_index[page_min: page_value]
     except Exception as err:
         print(err)
     result = ''
