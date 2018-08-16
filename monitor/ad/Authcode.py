@@ -100,6 +100,7 @@ class authCode(object):
             self.gene_line()
         self.image = self.image.transform((width + 20, height + 10), Image.AFFINE, (1, -0.3, 0, -0.1, 1, 0), Image.BILINEAR)  # 创建扭曲
         self.image = self.image.filter(ImageFilter.EDGE_ENHANCE_MORE)  # 滤镜，边界加强
+
     #image_file = text + '.png'
 
     #image_path = os.path.join(settings.STATIC_ROOT, 'images/%s' % image_file)

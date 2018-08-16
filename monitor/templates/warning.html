@@ -26,12 +26,12 @@
 				<td style="width:35px"><input name="id" value="{{item.id}}" readonly="readonly" style="width:35px;border:0px"></input></td>
 				<td style="width:100px">{% get_rule_index_name item.name%}</td>
 				<td style="width:100px">{{item.triggers.name}}</td>
-				<td style="width:100px">{{item.time}}分钟</td>
-				<td style="width:100px">{% get_rule_index_triggers_times item.triggers_times %}</td>
-				<td style="width:100px">{% get_triggers_diff item.triggers_diff %}</td>
-				<td style="width:100px">{{item.triggers_value}}</td>
+				<td style="width:99px">{{item.time}}分钟</td>
+				<td style="width:99px">{% get_rule_index_triggers_times item.triggers_times %}</td>
+				<td style="width:99px">{% get_triggers_diff item.triggers_diff %}</td>
+				<td style="width:99px">{{item.triggers_value}}</td>
 				{% autoescape off %}
-				<td style="width:100px">{% get_warning_message item.warning %}</td>
+				<td style="width:99px">{% get_warning_message item.warning %}</td>
 				{% endautoescape %}
 				{% if item.switch %}
 				<td style="width:50px"><select name="switch" style="height:22px">
@@ -45,7 +45,7 @@
 				</select></td>
 				{% endif %}
 				
-				<td style='border-style:none' >&nbsp;<input  type="submit" value="保存" style="width:43px" /></td>
+				<td style='border-style:none' >&nbsp;<input  type="submit" value="保存" style="width:46px" /></td>
 				
 			</tr>
 			
